@@ -1,0 +1,117 @@
+/* 移动端兼容性修复 */
+
+/* 1. 触摸事件支持 */
+.editable-element {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+/* 2. 移动端输入优化 */
+.property-group input,
+.property-group textarea,
+.property-group select {
+    font-size: 16px !important; /* 防止iOS缩放 */
+    min-height: 44px !important; /* 最小触摸区域 */
+    padding: 12px !important;
+}
+
+.property-group textarea {
+    min-height: 100px !important;
+}
+
+/* 3. 移动端工具栏优化 */
+.toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: white;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.tool-btn {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px 16px;
+    font-size: 14px;
+    margin: 4px;
+}
+
+/* 4. 属性面板移动端适配 */
+.properties-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 70vh;
+    overflow-y: auto;
+    z-index: 1000;
+    background: white;
+    box-shadow: 0 -2px 20px rgba(0,0,0,0.2);
+    border-radius: 20px 20px 0 0;
+    padding: 20px;
+}
+
+/* 5. 打印预览移动端优化 */
+@media print {
+    .toolbar,
+    .properties-panel {
+        display: none !important;
+    }
+    
+    .template-container {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .editable-element {
+        position: static !important;
+        margin: 10px 0 !important;
+    }
+}
+
+/* 6. 移动端双击事件替代 */
+@media (max-width: 768px) {
+    .editable-element {
+        cursor: pointer;
+    }
+    
+    /* 长按触发编辑 */
+    .editable-element:active {
+        opacity: 0.7;
+    }
+}
+
+/* 7. 防止移动端缩放 */
+input, textarea, select {
+    font-size: 16px !important;
+    transform: scale(1);
+}
+
+/* 8. 移动端安全区域 */
+@supports(padding: max(0px)) {
+    .toolbar {
+        padding-left: max(10px, env(safe-area-inset-left));
+        padding-right: max(10px, env(safe-area-inset-right));
+    }
+    
+    .properties-panel {
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+}
+
+/* 9. 移动端滚动优化 */
+.template-container {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+}
+
+/* 10. 点击高亮移除 */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
