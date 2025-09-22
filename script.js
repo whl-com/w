@@ -27,6 +27,8 @@ class PrintTemplateEditor {
         this.fixVivoButtonEvents();
         this.addVivoStyles();
         this.setupVivoFallback();
+        this.fixVivoPrint();
+        this.fixVivoChrome();
     }
     
     // vivo手机按钮事件修复
@@ -228,6 +230,46 @@ class PrintTemplateEditor {
             this.startCameraScan();
         };
     }
+    
+    // vivo自带浏览器打印修复
+    fixVivoPrint() {
+        const printBtn = document.getElementById('print');
+        if (printBtn) {
+            // 重写打印按钮事件
+            printBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // vivo浏览器打印特殊处理
+                if (navigator.userAgent.includes('VivoBrowser')) {
+                    this.showVivoPrintGuide();
+                } else {
+                    window.print();
+                }
+            }, { passive: false });
+        }
+    }
+    
+    // vivo浏览器打印指引
+    showVivoPrintGuide() {
+        const guide = document.createElement('div');
+        guide.style.position = 'fixed';
+        guide.style.top = '50%';
+        guide.style.left = '50%';
+        guide.style.transform = 'translate(-50%, -50%)';
+        guide.style.background = 'rgba(0, 0, 0, 0.95)';
+        guide.style.color = 'white';
+        guide.style.padding = '20px';
+        guide.style.borderRadius = '15px';
+        guide.style.zIndex = '10000';
+        guide.style.textAlign = 'center';
+        guide.style.maxWidth = '300px';
+        guide.innerHTML = `
+            <h3 style="margin:0 0 15px 0;color:#ffcc00;">vivo浏览器打印指引</h3>
+            <p style="margin:10px 0;font-size:14px;line-height:1.5;">
+                1. 点击右上角"•••"菜单<br>
+                2. 选择"分享"<br>
+                3. 找到
 
     initEventListeners() {
         // 添加文本按钮
