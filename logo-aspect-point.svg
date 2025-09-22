@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景圆形 -->
+  <circle cx="256" cy="256" r="256" fill="#667eea"/>
+  
+  <!-- 中心切面点设计 -->
+  <g transform="translate(128, 128) scale(1.5)">
+    <!-- 外圈切面环 -->
+    <circle cx="128" cy="128" r="96" fill="none" stroke="white" stroke-width="8" stroke-dasharray="20 10"/>
+    
+    <!-- 中心点 -->
+    <circle cx="128" cy="128" r="32" fill="white"/>
+    
+    <!-- 切面线 -->
+    <line x1="128" y1="32" x2="128" y2="224" stroke="white" stroke-width="4"/>
+    <line x1="32" y1="128" x2="224" y2="128" stroke="white" stroke-width="4"/>
+    
+    <!-- 45度切面线 -->
+    <line x1="64" y1="64" x2="192" y2="192" stroke="white" stroke-width="3" opacity="0.8"/>
+    <line x1="192" y1="64" x2="64" y2="192" stroke="white" stroke-width="3" opacity="0.8"/>
+    
+    <!-- 测量点标记 -->
+    <circle cx="128" cy="64" r="6" fill="#ff6b6b"/>
+    <circle cx="192" cy="128" r="6" fill="#4ecdc4"/>
+    <circle cx="128" cy="192" r="6" fill="#ffe66d"/>
+    <circle cx="64" cy="128" r="6" fill="#45b7d1"/>
+  </g>
+  
+  <!-- 文字标识 -->
+  <text x="256" y="400" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="32" font-weight="bold">
+    Aspect Point
+  </text>
+  <text x="256" y="440" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="Arial, sans-serif" font-size="18">
+    切面点
+  </text>
+</svg>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景圆形 -->
+  <circle cx="96" cy="96" r="96" fill="#667eea"/>
+  
+  <!-- 切面点核心设计 -->
+  <circle cx="96" cy="96" r="36" fill="white"/>
+  
+  <!-- 十字切面线 -->
+  <line x1="96" y1="60" x2="96" y2="132" stroke="white" stroke-width="4"/>
+  <line x1="60" y1="96" x2="132" y2="96" stroke="white" stroke-width="4"/>
+  
+  <!-- 四个测量点 -->
+  <circle cx="96" cy="60" r="4" fill="#ff6b6b"/>
+  <circle cx="132" cy="96" r="4" fill="#4ecdc4"/>
+  <circle cx="96" cy="132" r="4" fill="#ffe66d"/>
+  <circle cx="60" cy="96" r="4" fill="#45b7d1"/>
+</svg>
