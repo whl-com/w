@@ -10,7 +10,6 @@ class PrintTemplateEditor {
         
         // vivo手机特殊初始化
         if (this.isVivoMobile) {
-            console.log('检测到vivo手机，应用专用修复');
             this.initVivoMobile();
         }
     }
@@ -138,13 +137,10 @@ class PrintTemplateEditor {
                 });
                 input.dispatchEvent(event);
             } catch (error) {
-                console.log('vivo文件选择触发方式1失败');
-                
                 // 备用方案
                 try {
                     input.click();
                 } catch (error2) {
-                    console.log('vivo文件选择触发方式2失败');
                     alert('请手动选择图片文件');
                 }
             }
@@ -269,7 +265,11 @@ class PrintTemplateEditor {
             <p style="margin:10px 0;font-size:14px;line-height:1.5;">
                 1. 点击右上角"•••"菜单<br>
                 2. 选择"分享"<br>
-                3. 找到
+                3. 找到"打印"或"生成PDF"选项<br>
+                4. 选择打印机或保存为PDF文件
+            </p>
+            <button onclick="this.parentElement.remove()" style="padding:10px 20px;background:#ffcc00;color:#000;border:none;border-radius:8px;font-weight:bold;margin-top:15px;">知道了</button>
+        `;
 
     initEventListeners() {
         // 添加文本按钮
@@ -338,18 +338,6 @@ class PrintTemplateEditor {
             this.selectElement(element);
         });
 
-        // 双击编辑（弹出属性面板）
-        element.addEventListener('dblclick', (e) => {
-            e.stopPropagation();
-            this.selectElement(element);
-        });
-
-        // 双击编辑
-        element.addEventListener('dblclick', (e) => {
-            e.stopPropagation();
-            this.selectElement(element);
-        });
-
         // 点击选择（只选中不弹出属性面板）
         element.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -397,7 +385,7 @@ class PrintTemplateEditor {
         
         element.appendChild(img);
 
-        // 双击编辑
+        // 双击编辑（弹出属性面板）
         element.addEventListener('dblclick', (e) => {
             e.stopPropagation();
             this.selectElement(element);
@@ -494,7 +482,6 @@ class PrintTemplateEditor {
                 };
             })
             .catch((error) => {
-                console.error('摄像头访问错误:', error);
                 alert('无法访问摄像头，请确保已授予相机权限');
                 document.querySelector('.scan-overlay')?.remove();
             });
@@ -543,7 +530,7 @@ class PrintTemplateEditor {
             imageDataUrl,
             'chi_sim', // 中文简体
             { 
-                logger: m => console.log(m),
+                logger: m => {},
                 tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK
             }
         ).then(({ data: { text } }) => {
@@ -560,8 +547,7 @@ class PrintTemplateEditor {
             }
         }).catch(error => {
             document.body.removeChild(loadingElement);
-            console.error('OCR识别错误:', error);
-            alert('文字识别失败，请检查网络连接或稍后重试');
+            alert('文字识别失败，请重试');
         });
     }
 
@@ -776,7 +762,6 @@ class PrintTemplateEditor {
             // 处理换行符，将\n转换为<br>标签
             const formattedContent = content.replace(/\n/g, '<br>');
             this.selectedElement.innerHTML = formattedContent;
-            this.selectedElement.style.fontSize = fontSize;
             this.selectedElement.style.fontSize = fontSize;
             this.selectedElement.style.textAlign = align;
             this.applyStylePreset(this.selectedElement, preset);
