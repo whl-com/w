@@ -205,6 +205,142 @@ body {
     }
 }
 
+/* 打印预览模态框 */
+.print-preview-modal {
+    font-family: 'Microsoft YaHei', sans-serif;
+}
+
+.print-preview-container {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.print-preview-header {
+    background: #667eea;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.print-preview-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.close-preview {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.print-preview-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    max-height: 400px;
+}
+
+.template-print-preview {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 2px dashed #ddd;
+}
+
+.print-preview-controls {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.print-btn, .cancel-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.print-btn {
+    background: #667eea;
+    color: white;
+}
+
+.print-btn:hover {
+    background: #5a67d8;
+}
+
+.cancel-btn {
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+.cancel-btn:hover {
+    background: #cbd5e0;
+}
+
+.print-tips {
+    padding: 10px 20px;
+    background: #fff3cd;
+    border-top: 1px solid #ffeaa7;
+    font-size: 12px;
+    color: #856404;
+}
+
+.print-tips p {
+    margin: 0;
+}
+
+/* 移动端打印预览优化 */
+@media (max-width: 768px) {
+    .print-preview-container {
+        width: 95%;
+        max-height: 85vh;
+    }
+    
+    .print-preview-header {
+        padding: 12px 15px;
+    }
+    
+    .print-preview-header h3 {
+        font-size: 16px;
+    }
+    
+    .print-preview-content {
+        padding: 15px;
+    }
+    
+    .print-preview-controls {
+        padding: 12px 15px;
+        flex-direction: column;
+    }
+    
+    .print-btn, .cancel-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
 /* 打印样式 */
 @media print {
     body * {

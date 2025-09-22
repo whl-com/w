@@ -7,6 +7,7 @@ class MobileTouchHandler {
         this.touchStartX = 0;
         this.touchStartY = 0;
         this.longPressTimer = null;
+        this.isDragging = false;
         
         this.initTouchEvents();
     }
@@ -15,7 +16,7 @@ class MobileTouchHandler {
         const elements = document.querySelectorAll('.editable-element');
         
         elements.forEach(element => {
-            // 移除原有的双击事件
+            // 移除原有的双击和点击事件
             const newElement = element.cloneNode(true);
             element.parentNode.replaceChild(newElement, element);
             
@@ -31,12 +32,14 @@ class MobileTouchHandler {
             this.touchStartTime = Date.now();
             this.touchStartX = e.touches[0].clientX;
             this.touchStartY = e.touches[0].clientY;
+            this.isDragging = false;
             
-            // 长按触发编辑
+            // 长按触发编辑（任何位置都可以）
             this.longPressTimer = setTimeout(() => {
                 this.editor.selectElement(element);
                 this.showEditIndicator(element);
-            }, 500);
+                this.isDragging = false;
+            }, 400); // 缩短长按时间到400ms
         }, { passive: false });
 
         // 触摸移动
@@ -52,8 +55,9 @@ class MobileTouchHandler {
             const deltaX = Math.abs(currentX - this.touchStartX);
             const deltaY = Math.abs(currentY - this.touchStartY);
             
-            if (deltaX > 10 || deltaY > 10) {
-                // 滑动操作，取消长按
+            if (deltaX > 5 || deltaY > 5) {
+                // 滑动操作，标记为拖动
+                this.isDragging = true;
                 if (this.longPressTimer) {
                     clearTimeout(this.longPressTimer);
                     this.longPressTimer = null;
@@ -74,11 +78,13 @@ class MobileTouchHandler {
             const deltaX = Math.abs(currentX - this.touchStartX);
             const deltaY = Math.abs(currentY - this.touchStartY);
             
-            // 短按（点击） - 选中元素
-            if (touchDuration < 300 && deltaX < 10 && deltaY < 10) {
+            // 短按（点击） - 选中元素（任何位置都可以）
+            if (touchDuration < 300 && deltaX < 10 && deltaY < 10 && !this.isDragging) {
                 this.editor.selectElementWithoutPanel(element);
                 this.showSelectionIndicator(element);
             }
+            
+            this.isDragging = false;
         }, { passive: false });
 
         // 触摸取消
@@ -87,6 +93,7 @@ class MobileTouchHandler {
                 clearTimeout(this.longPressTimer);
                 this.longPressTimer = null;
             }
+            this.isDragging = false;
         }, { passive: false });
     }
 

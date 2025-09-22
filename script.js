@@ -26,7 +26,7 @@ class PrintTemplateEditor {
 
         // 打印按钮
         document.getElementById('print').addEventListener('click', () => {
-            window.print();
+            this.showPrintPreview();
         });
 
         // 保存属性按钮
@@ -469,6 +469,71 @@ class PrintTemplateEditor {
             this.selectedElement = null;
         }
         this.hidePropertiesPanel();
+    }
+
+    // 显示打印预览
+    showPrintPreview() {
+        // 创建打印预览模态框
+        const printPreview = document.createElement('div');
+        printPreview.className = 'print-preview-modal';
+        printPreview.innerHTML = `
+            <div class="print-preview-container">
+                <div class="print-preview-header">
+                    <h3>打印预览</h3>
+                    <button class="close-preview">×</button>
+                </div>
+                <div class="print-preview-content">
+                    <div class="template-print-preview">
+                        ${this.template.innerHTML}
+                    </div>
+                </div>
+                <div class="print-preview-controls">
+                    <button class="print-btn primary">立即打印</button>
+                    <button class="cancel-btn">取消</button>
+                </div>
+                <div class="print-tips">
+                    <p>💡 打印提示：确保打印机设置为"实际尺寸"，边距设置为"无"</p>
+                </div>
+            </div>
+        `;
+        
+        printPreview.style.position = 'fixed';
+        printPreview.style.top = '0';
+        printPreview.style.left = '0';
+        printPreview.style.width = '100%';
+        printPreview.style.height = '100%';
+        printPreview.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        printPreview.style.zIndex = '2000';
+        printPreview.style.display = 'flex';
+        printPreview.style.justifyContent = 'center';
+        printPreview.style.alignItems = 'center';
+
+        document.body.appendChild(printPreview);
+
+        // 关闭预览
+        const closeBtn = printPreview.querySelector('.close-preview');
+        const cancelBtn = printPreview.querySelector('.cancel-btn');
+        
+        const closePreview = () => {
+            document.body.removeChild(printPreview);
+        };
+
+        closeBtn.addEventListener('click', closePreview);
+        cancelBtn.addEventListener('click', closePreview);
+
+        // 打印按钮
+        const printBtn = printPreview.querySelector('.print-btn');
+        printBtn.addEventListener('click', () => {
+            window.print();
+            closePreview();
+        });
+
+        // 移动端触摸关闭支持
+        printPreview.addEventListener('touchstart', (e) => {
+            if (e.target === printPreview) {
+                closePreview();
+            }
+        });
     }
 
     showPropertiesPanel() {
