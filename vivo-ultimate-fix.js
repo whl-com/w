@@ -212,7 +212,7 @@ class VivoUltimateFix {
     
     // 添加全局监听器
     addGlobalListeners() {
-        // 全局点击监听
+        // 全局点击监听 - 只拦截工具按钮
         document.addEventListener('click', (e) => {
             if (e.target.matches('.tool-btn, .tool-btn *')) {
                 e.preventDefault();
@@ -220,7 +220,7 @@ class VivoUltimateFix {
             }
         }, true);
         
-        // 全局触摸监听
+        // 全局触摸监听 - 只拦截工具按钮
         document.addEventListener('touchstart', (e) => {
             if (e.target.matches('.tool-btn, .tool-btn *')) {
                 e.preventDefault();
@@ -234,6 +234,28 @@ class VivoUltimateFix {
                 e.stopPropagation();
             }
         }, true);
+        
+        // 特别允许文本和图片元素的拖动事件
+        document.addEventListener('touchstart', (e) => {
+            if (e.target.matches('.text-element, .text-element *, .image-element, .image-element *')) {
+                // 允许拖动事件通过
+                e.stopPropagation();
+            }
+        }, false);
+        
+        document.addEventListener('touchmove', (e) => {
+            if (e.target.matches('.text-element, .text-element *, .image-element, .image-element *')) {
+                // 允许拖动事件通过
+                e.stopPropagation();
+            }
+        }, false);
+        
+        document.addEventListener('touchend', (e) => {
+            if (e.target.matches('.text-element, .text-element *, .image-element, .image-element *')) {
+                // 允许拖动事件通过
+                e.stopPropagation();
+            }
+        }, false);
     }
     
     // 注入vivo样式
