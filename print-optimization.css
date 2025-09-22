@@ -1,0 +1,159 @@
+/* 打印优化样式 - 针对12×18厘米模板 */
+
+/* 基础字体设置 */
+.text-element {
+    font-family: 'Microsoft YaHei', 'SimHei', '黑体', sans-serif;
+    line-height: 1.4;
+    color: #000000;
+    font-weight: normal;
+}
+
+/* 标题样式 */
+.text-element.title {
+    font-size: 20px !important;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* 副标题样式 */
+.text-element.subtitle {
+    font-size: 16px !important;
+    font-weight: bold;
+    text-align: left;
+    margin-bottom: 8px;
+}
+
+/* 正文样式 */
+.text-element.body {
+    font-size: 14px !important;
+    text-align: justify;
+    line-height: 1.5;
+}
+
+/* 小字样式 */
+.text-element.small {
+    font-size: 12px !important;
+    color: #666666;
+}
+
+/* 强调样式 */
+.text-element.emphasis {
+    font-weight: bold;
+    color: #000000;
+}
+
+/* 图片优化 */
+.image-element {
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+.image-element img {
+    display: block;
+    margin: 0 auto;
+}
+
+/* 打印边距优化 */
+.template {
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+/* 元素间距优化 */
+.editable-element {
+    margin-bottom: 10px;
+}
+
+/* 移动端触摸优化 */
+@media (max-width: 768px) {
+    .text-element.title {
+        font-size: 18px !important;
+    }
+    
+    .text-element.subtitle {
+        font-size: 14px !important;
+    }
+    
+    .text-element.body {
+        font-size: 13px !important;
+    }
+    
+    .text-element.small {
+        font-size: 11px !important;
+    }
+}
+
+/* 高对比度模式（适合打印） */
+.high-contrast .text-element {
+    color: #000000 !important;
+    background-color: transparent !important;
+}
+
+.high-contrast .image-element {
+    border: 2px solid #000000;
+}
+
+/* 打印预览优化 */
+@media print {
+    .text-element {
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .image-element {
+        border: 1px solid #000000 !important;
+    }
+    
+    /* 确保所有文字黑色打印 */
+    * {
+        color: #000000 !important;
+        background-color: transparent !important;
+    }
+}
+
+/* 预设模板样式 */
+.template-preset {
+    background: white;
+    padding: 20px;
+}
+
+.template-preset .text-element {
+    margin-bottom: 12px;
+}
+
+.template-preset .image-element {
+    margin: 15px auto;
+    max-width: 80%;
+}
+
+/* 响应式字体大小调整 */
+.font-size-adjust {
+    transition: font-size 0.3s ease;
+}
+
+/* 打印机适配提示 */
+.printer-notice {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    color: #856404;
+    margin-bottom: 15px;
+}
+
+.printer-notice h4 {
+    margin: 0 0 5px 0;
+    font-weight: bold;
+}
+
+.printer-notice ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.printer-notice li {
+    margin-bottom: 3px;
+}
