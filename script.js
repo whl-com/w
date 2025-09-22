@@ -522,9 +522,9 @@ class PrintTemplateEditor {
         cancelBtn.addEventListener('click', closePreview);
 
         // 打印按钮
-        const printBtn = printPreview.querySelector('.print-btn');
+        const printBtn = printPreview.querySelector('.print-btn');// 打印按钮
         printBtn.addEventListener('click', () => {
-            window.print();
+            this.showPrinterSelection();
             closePreview();
         });
 
@@ -532,6 +532,101 @@ class PrintTemplateEditor {
         printPreview.addEventListener('touchstart', (e) => {
             if (e.target === printPreview) {
                 closePreview();
+            }
+        });
+    }
+
+    // 显示打印机选择
+    showPrinterSelection() {
+        // 检查浏览器是否支持打印对话框
+        if (typeof window.print === 'function') {
+            // 使用setTimeout确保在用户交互后调用，避免浏览器阻止
+            setTimeout(() => {
+                try {
+                    // 直接调用打印对话框（会显示打印机选择）
+                    window.print();
+                } catch (error) {
+                    console.error('打印出错:', error);
+                    // 如果直接打印失败，显示指导信息
+                    this.showPrintInstructions();
+                }
+            }, 100);
+        } else {
+            // 如果不支持，提供手动指导
+            this.showPrintInstructions();
+        }
+    }
+
+    // 显示打印指导
+    showPrintInstructions() {
+        const instructions = document.createElement('div');
+        instructions.className = 'print-instructions-modal';
+        instructions.innerHTML = `
+            <div class="print-instructions-container">
+                <div class="print-instructions-header">
+                    <h3>打印指导</h3>
+                    <button class="close-instructions">×</button>
+                </div>
+                <div class="print-instructions-content">
+                    <p>📋 <strong>打印步骤：</strong></p>
+                    <ol>
+                        <li>按 <kbd>Ctrl</kbd> + <kbd>P</kbd> (Windows) 或 <kbd>Cmd</kbd> + <kbd>P</kbd> (Mac)</li>
+                        <li>在打印对话框中选择打印机</li>
+                        <li>设置打印选项：<strong>实际尺寸</strong>、<strong>无边距</strong></li>
+                        <li>点击"打印"按钮</li>
+                    </ol>
+                    
+                    <div class="print-shortcuts">
+                        <p>⚡ <strong>快捷键：</strong></p>
+                        <div class="shortcut-grid">
+                            <span class="shortcut"><kbd>Ctrl</kbd> + <kbd>P</kbd></span>
+                            <span>打开打印对话框</span>
+                        </div>
+                    </div>
+                    
+                    <div class="browser-print-info">
+                        <p>🌐 <strong>浏览器打印支持：</strong></p>
+                        <ul>
+                            <li>Chrome/Firefox/Edge: 完全支持</li>
+                            <li>Safari: 完全支持</li>
+                            <li>移动浏览器: 部分支持（可能需要分享到打印APP）</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="print-instructions-controls">
+                    <button class="got-it-btn primary">我知道了</button>
+                </div>
+            </div>
+        `;
+
+        instructions.style.position = 'fixed';
+        instructions.style.top = '0';
+        instructions.style.left = '0';
+        instructions.style.width = '100%';
+        instructions.style.height = '100%';
+        instructions.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        instructions.style.zIndex = '3000';
+        instructions.style.display = 'flex';
+        instructions.style.justifyContent = 'center';
+        instructions.style.alignItems = 'center';
+
+        document.body.appendChild(instructions);
+
+        // 关闭指导
+        const closeBtn = instructions.querySelector('.close-instructions');
+        const gotItBtn = instructions.querySelector('.got-it-btn');
+        
+        const closeInstructions = () => {
+            document.body.removeChild(instructions);
+        };
+
+        closeBtn.addEventListener('click', closeInstructions);
+        gotItBtn.addEventListener('click', closeInstructions);
+
+        // 移动端触摸关闭支持
+        instructions.addEventListener('touchstart', (e) => {
+            if (e.target === instructions) {
+                closeInstructions();
             }
         });
     }

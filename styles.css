@@ -311,6 +311,125 @@ body {
     margin: 0;
 }
 
+/* 打印指导模态框 */
+.print-instructions-modal {
+    font-family: 'Microsoft YaHei', sans-serif;
+}
+
+.print-instructions-container {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.print-instructions-header {
+    background: #ff6b6b;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.print-instructions-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.close-instructions {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.print-instructions-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.print-instructions-content ol {
+    padding-left: 20px;
+    margin: 10px 0;
+}
+
+.print-instructions-content li {
+    margin-bottom: 8px;
+}
+
+.print-shortcuts {
+    margin: 15px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.shortcut-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    align-items: center;
+}
+
+.shortcut {
+    background: #495057;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+}
+
+.browser-print-info {
+    margin: 15px 0;
+    padding: 15px;
+    background: #e7f5ff;
+    border-radius: 8px;
+    border-left: 4px solid #339af0;
+}
+
+.browser-print-info ul {
+    padding-left: 20px;
+    margin: 8px 0;
+}
+
+.print-instructions-controls {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    text-align: center;
+}
+
+.got-it-btn {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.got-it-btn:hover {
+    background: #fa5252;
+}
+
 /* 移动端打印预览优化 */
 @media (max-width: 768px) {
     .print-preview-container {

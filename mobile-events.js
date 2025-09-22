@@ -156,16 +156,125 @@ function optimizeMobileInputs() {
     });
 }
 
-// 移动端初始化
-document.addEventListener('DOMContentLoaded', function() {
-    // 检测移动设备
+// 移动端功能修复
+function fixMobileFunctions() {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     
     if (isMobile) {
-        // 添加移动端优化
+        console.log('检测到移动设备，启用移动端功能修复');
+        
+        // 1. 修复文件上传功能
+        fixMobileFileUpload();
+        
+        // 2. 修复摄像头权限提示
+        fixCameraPermissions();
+        
+        // 3. 修复打印功能
+        fixMobilePrint();
+        
+        // 4. 添加移动端优化
         optimizeMobileInputs();
         MobileTouchHandler.optimizePrintForMobile();
         
-        console.log('移动端优化已启用');
+        // 5. 显示移动端使用提示
+        showMobileTips();
     }
+}
+
+// 修复移动端文件上传
+function fixMobileFileUpload() {
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+    fileInputs.forEach(input => {
+        // 确保文件输入在移动端可见
+        input.style.display = 'block';
+        input.style.width = '100%';
+        input.style.height = '44px';
+        input.style.opacity = '1';
+    });
+}
+
+// 修复摄像头权限
+function fixCameraPermissions() {
+    // 移动端需要明确的用户交互才能请求摄像头权限
+    const scanBtn = document.getElementById('scanText');
+    if (scanBtn) {
+        scanBtn.addEventListener('click', function() {
+            // 显示摄像头权限提示
+            if (confirm('移动端使用摄像头需要授权。请允许浏览器访问摄像头权限。')) {
+                // 用户确认后尝试访问摄像头
+                if (typeof navigator.mediaDevices !== 'undefined' && 
+                    typeof navigator.mediaDevices.getUserMedia !== 'undefined') {
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(() => {
+                            console.log('摄像头权限已获得');
+                        })
+                        .catch(error => {
+                            alert('摄像头访问被拒绝：' + error.message);
+                        });
+                }
+            }
+        });
+    }
+}
+
+// 修复移动端打印
+function fixMobilePrint() {
+    const printBtn = document.getElementById('print');
+    if (printBtn) {
+        printBtn.addEventListener('click', function() {
+            // 移动端打印指导
+            showMobilePrintGuide();
+        });
+    }
+}
+
+// 显示移动端打印指导
+function showMobilePrintGuide() {
+    const guide = document.createElement('div');
+    guide.className = 'mobile-print-guide';
+    guide.innerHTML = `
+        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; justify-content: center; align-items: center;">
+            <div style="background: white; padding: 20px; border-radius: 12px; max-width: 90%; text-align: center;">
+                <h3 style="color: #007bff; margin-bottom: 15px;">📱 移动端打印指导</h3>
+                <p style="margin-bottom: 15px;">移动浏览器打印功能有限，请使用以下方法：</p>
+                <ol style="text-align: left; margin-bottom: 15px;">
+                    <li>点击浏览器菜单（右上角三个点）</li>
+                    <li>选择"分享"或"发送"</li>
+                    <li>选择"打印"或保存为PDF</li>
+                    <li>使用打印APP进行打印</li>
+                </ol>
+                <button onclick="this.parentElement.parentElement.parentElement.remove()" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
+                    我知道了
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(guide);
+}
+
+// 显示移动端使用提示
+function showMobileTips() {
+    // 延迟显示提示，避免干扰用户
+    setTimeout(() => {
+        const tips = document.createElement('div');
+        tips.className = 'mobile-tips';
+        tips.innerHTML = `
+            <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #007bff; color: white; padding: 10px 15px; border-radius: 8px; z-index: 9999; font-size: 14px;">
+                💡 提示：移动端请使用Chrome浏览器，并允许所有权限请求
+            </div>
+        `;
+        document.body.appendChild(tips);
+        
+        // 5秒后自动隐藏
+        setTimeout(() => {
+            if (tips.parentNode) {
+                tips.parentNode.removeChild(tips);
+            }
+        }, 5000);
+    }, 2000);
+}
+
+// 移动端初始化
+document.addEventListener('DOMContentLoaded', function() {
+    fixMobileFunctions();
 });
