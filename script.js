@@ -4,272 +4,9 @@ class PrintTemplateEditor {
         this.propertiesPanel = document.getElementById('propertiesPanel');
         this.selectedElement = null;
         this.elementCount = 0;
-        this.isVivoMobile = this.detectVivoMobile();
         
         this.initEventListeners();
-        
-        // vivo手机特殊初始化
-        if (this.isVivoMobile) {
-            this.initVivoMobile();
-        }
     }
-    
-    // 检测vivo手机
-    detectVivoMobile() {
-        const userAgent = navigator.userAgent;
-        return (/vivo/i.test(userAgent) || /V\d{4}/i.test(userAgent)) && 
-               /Android/i.test(userAgent);
-    }
-    
-    // vivo手机初始化
-    initVivoMobile() {
-        this.fixVivoButtonEvents();
-        this.addVivoStyles();
-        this.setupVivoFallback();
-        this.fixVivoPrint();
-        this.fixVivoChrome();
-    }
-    
-    // vivo手机按钮事件修复
-    fixVivoButtonEvents() {
-        const buttons = ['addText', 'addImage', 'scanText', 'print'];
-        
-        buttons.forEach(btnId => {
-            const button = document.getElementById(btnId);
-            if (button) {
-                // 移除所有现有事件监听器
-                const newButton = button.cloneNode(true);
-                button.parentNode.replaceChild(newButton, button);
-                
-                // 添加vivo专用事件处理
-                this.setupVivoButton(newButton, btnId);
-            }
-        });
-    }
-    
-    // 设置vivo按钮
-    setupVivoButton(button, btnId) {
-        // 触摸开始
-        button.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            button.style.transform = 'scale(0.95)';
-            button.style.opacity = '0.8';
-        }, { passive: false });
-        
-        // 触摸结束
-        button.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            button.style.transform = '';
-            button.style.opacity = '';
-            
-            // 执行对应功能
-            setTimeout(() => {
-                this.executeVivoButtonAction(btnId);
-            }, 50);
-        }, { passive: false });
-        
-        // 触摸取消
-        button.addEventListener('touchcancel', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            button.style.transform = '';
-            button.style.opacity = '';
-        }, { passive: false });
-        
-        // 点击事件（备用）
-        button.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.executeVivoButtonAction(btnId);
-        }, { passive: false });
-    }
-    
-    // 执行vivo按钮动作
-    executeVivoButtonAction(btnId) {
-        switch(btnId) {
-            case 'addText':
-                this.addTextElement('vivo文本');
-                break;
-            case 'addImage':
-                this.triggerVivoImageInput();
-                break;
-            case 'scanText':
-                this.startCameraScan();
-                break;
-            case 'print':
-                window.print();
-                break;
-        }
-    }
-    
-    // vivo图片输入触发
-    triggerVivoImageInput() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.style.position = 'fixed';
-        input.style.left = '-1000px';
-        
-        input.onchange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    this.createImageElement(event.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
-            document.body.removeChild(input);
-        };
-        
-        // 特殊处理vivo文件选择
-        setTimeout(() => {
-            document.body.appendChild(input);
-            
-            // 尝试多种触发方式
-            try {
-                const event = new MouseEvent('click', {
-                    view: window,
-                    bubbles: true,
-                    cancelable: true
-                });
-                input.dispatchEvent(event);
-            } catch (error) {
-                // 备用方案
-                try {
-                    input.click();
-                } catch (error2) {
-                    alert('请手动选择图片文件');
-                }
-            }
-        }, 100);
-    }
-    
-    // 添加vivo样式
-    addVivoStyles() {
-        const style = document.createElement('style');
-        style.textContent = `
-            /* vivo手机专用样式 */
-            .tool-btn {
-                min-height: 48px !important;
-                min-width: 48px !important;
-                padding: 14px 20px !important;
-                font-size: 17px !important;
-                font-weight: bold !important;
-                border: 2px solid #e0e0e0 !important;
-                background: linear-gradient(135deg, #667eea, #764ba2) !important;
-                color: white !important;
-                border-radius: 12px !important;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-                margin: 8px !important;
-                touch-action: manipulation !important;
-            }
-            
-            /* vivo按钮激活状态 */
-            .tool-btn:active {
-                transform: scale(0.92) !important;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
-            }
-            
-            /* vivo扫描界面优化 */
-            .scan-overlay {
-                background: rgba(0, 0, 0, 0.95) !important;
-            }
-            
-            .scan-container {
-                background: linear-gradient(135deg, #2c3e50, #34495e) !important;
-                border-radius: 20px !important;
-                padding: 20px !important;
-            }
-            
-            /* vivo文件选择优化 */
-            input[type="file"] {
-                font-size: 18px !important;
-                padding: 12px !important;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    
-    // 设置vivo备用机制
-    setupVivoFallback() {
-        // 创建备用按钮容器
-        const fallbackContainer = document.createElement('div');
-        fallbackContainer.className = 'vivo-fallback';
-        fallbackContainer.style.position = 'fixed';
-        fallbackContainer.style.bottom = '20px';
-        fallbackContainer.style.right = '20px';
-        fallbackContainer.style.zIndex = '9999';
-        fallbackContainer.style.display = 'flex';
-        fallbackContainer.style.flexDirection = 'column';
-        fallbackContainer.style.gap = '10px';
-        fallbackContainer.innerHTML = `
-            <button onclick="window.vivoAddText()" style="padding:12px 16px;background:#4CAF50;color:white;border:none;border-radius:8px;font-size:14px;font-weight:bold;">添加文本</button>
-            <button onclick="window.vivoAddImage()" style="padding:12px 16px;background:#2196F3;color:white;border:none;border-radius:8px;font-size:14px;font-weight:bold;">添加图片</button>
-            <button onclick="window.vivoScan()" style="padding:12px 16px;background:#FF9800;color:white;border:none;border-radius:8px;font-size:14px;font-weight:bold;">扫描识别</button>
-        `;
-        
-        document.body.appendChild(fallbackContainer);
-        
-        // 全局备用函数
-        window.vivoAddText = () => {
-            this.addTextElement('vivo备用文本');
-        };
-        
-        window.vivoAddImage = () => {
-            this.triggerVivoImageInput();
-        };
-        
-        window.vivoScan = () => {
-            this.startCameraScan();
-        };
-    }
-    
-    // vivo自带浏览器打印修复
-    fixVivoPrint() {
-        const printBtn = document.getElementById('print');
-        if (printBtn) {
-            // 重写打印按钮事件
-            printBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                // vivo浏览器打印特殊处理
-                if (navigator.userAgent.includes('VivoBrowser')) {
-                    this.showVivoPrintGuide();
-                } else {
-                    window.print();
-                }
-            }, { passive: false });
-        }
-    }
-    
-    // vivo浏览器打印指引
-    showVivoPrintGuide() {
-        const guide = document.createElement('div');
-        guide.style.position = 'fixed';
-        guide.style.top = '50%';
-        guide.style.left = '50%';
-        guide.style.transform = 'translate(-50%, -50%)';
-        guide.style.background = 'rgba(0, 0, 0, 0.95)';
-        guide.style.color = 'white';
-        guide.style.padding = '20px';
-        guide.style.borderRadius = '15px';
-        guide.style.zIndex = '10000';
-        guide.style.textAlign = 'center';
-        guide.style.maxWidth = '300px';
-        guide.innerHTML = `
-            <h3 style="margin:0 0 15px 0;color:#ffcc00;">vivo浏览器打印指引</h3>
-            <p style="margin:10px 0;font-size:14px;line-height:1.5;">
-                1. 点击右上角"•••"菜单<br>
-                2. 选择"分享"<br>
-                3. 找到"打印"或"生成PDF"选项<br>
-                4. 选择打印机或保存为PDF文件
-            </p>
-            <button onclick="this.parentElement.remove()" style="padding:10px 20px;background:#ffcc00;color:#000;border:none;border-radius:8px;font-weight:bold;margin-top:15px;">知道了</button>
-        `;
 
     initEventListeners() {
         // 添加文本按钮
@@ -338,6 +75,18 @@ class PrintTemplateEditor {
             this.selectElement(element);
         });
 
+        // 双击编辑（弹出属性面板）
+        element.addEventListener('dblclick', (e) => {
+            e.stopPropagation();
+            this.selectElement(element);
+        });
+
+        // 双击编辑
+        element.addEventListener('dblclick', (e) => {
+            e.stopPropagation();
+            this.selectElement(element);
+        });
+
         // 点击选择（只选中不弹出属性面板）
         element.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -385,7 +134,7 @@ class PrintTemplateEditor {
         
         element.appendChild(img);
 
-        // 双击编辑（弹出属性面板）
+        // 双击编辑
         element.addEventListener('dblclick', (e) => {
             e.stopPropagation();
             this.selectElement(element);
@@ -482,6 +231,7 @@ class PrintTemplateEditor {
                 };
             })
             .catch((error) => {
+                console.error('摄像头访问错误:', error);
                 alert('无法访问摄像头，请确保已授予相机权限');
                 document.querySelector('.scan-overlay')?.remove();
             });
@@ -530,7 +280,7 @@ class PrintTemplateEditor {
             imageDataUrl,
             'chi_sim', // 中文简体
             { 
-                logger: m => {},
+                logger: m => console.log(m),
                 tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK
             }
         ).then(({ data: { text } }) => {
@@ -547,7 +297,8 @@ class PrintTemplateEditor {
             }
         }).catch(error => {
             document.body.removeChild(loadingElement);
-            alert('文字识别失败，请重试');
+            console.error('OCR识别错误:', error);
+            alert('文字识别失败，请检查网络连接或稍后重试');
         });
     }
 
@@ -762,6 +513,7 @@ class PrintTemplateEditor {
             // 处理换行符，将\n转换为<br>标签
             const formattedContent = content.replace(/\n/g, '<br>');
             this.selectedElement.innerHTML = formattedContent;
+            this.selectedElement.style.fontSize = fontSize;
             this.selectedElement.style.fontSize = fontSize;
             this.selectedElement.style.textAlign = align;
             this.applyStylePreset(this.selectedElement, preset);
