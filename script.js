@@ -69,19 +69,7 @@ class PrintTemplateEditor {
         element.style.fontSize = '14px';
         element.style.textAlign = 'left';
         
-        // 双击编辑（弹出属性面板）
-        element.addEventListener('dblclick', (e) => {
-            e.stopPropagation();
-            this.selectElement(element);
-        });
-
-        // 双击编辑（弹出属性面板）
-        element.addEventListener('dblclick', (e) => {
-            e.stopPropagation();
-            this.selectElement(element);
-        });
-
-        // 双击编辑
+        // 双击编辑（任何位置都可以触发）
         element.addEventListener('dblclick', (e) => {
             e.stopPropagation();
             this.selectElement(element);
@@ -322,7 +310,7 @@ class PrintTemplateEditor {
         element.style.wordBreak = 'break-all';
         element.style.border = '2px dashed #007bff';
         
-        // 双击编辑
+        // 双击编辑（任何位置都可以触发）
         element.addEventListener('dblclick', (e) => {
             e.stopPropagation();
             this.selectElement(element);
@@ -474,86 +462,127 @@ class PrintTemplateEditor {
     // 显示打印预览
     showPrintPreview() {
         // 创建打印预览模态框
-        const printPreview = document.createElement('div');
-        printPreview.className = 'print-preview-modal';
-        printPreview.innerHTML = `
-            <div class="print-preview-container">
+        const modal = document.createElement('div');
+        modal.className = 'print-preview-modal';
+        modal.innerHTML = `
+            <div class="print-preview-overlay"></div>
+            <div class="print-preview-content">
                 <div class="print-preview-header">
                     <h3>打印预览</h3>
                     <button class="close-preview">×</button>
                 </div>
-                <div class="print-preview-content">
-                    <div class="template-print-preview">
-                        ${this.template.innerHTML}
-                    </div>
+                <div class="print-preview-body">
+                    <div class="preview-template"></div>
                 </div>
-                <div class="print-preview-controls">
-                    <button class="print-btn primary">立即打印</button>
-                    <button class="cancel-btn">取消</button>
-                </div>
-                <div class="print-tips">
-                    <p>💡 打印提示：确保打印机设置为"实际尺寸"，边距设置为"无"</p>
+                <div class="print-preview-footer">
+                    <button class="btn-cancel">取消</button>
+                    <button class="btn-print">打印</button>
                 </div>
             </div>
         `;
         
-        printPreview.style.position = 'fixed';
-        printPreview.style.top = '0';
-        printPreview.style.left = '0';
-        printPreview.style.width = '100%';
-        printPreview.style.height = '100%';
-        printPreview.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        printPreview.style.zIndex = '2000';
-        printPreview.style.display = 'flex';
-        printPreview.style.justifyContent = 'center';
-        printPreview.style.alignItems = 'center';
-
-        document.body.appendChild(printPreview);
-
-        // 关闭预览
-        const closeBtn = printPreview.querySelector('.close-preview');
-        const cancelBtn = printPreview.querySelector('.cancel-btn');
+        document.body.appendChild(modal);
         
-        const closePreview = () => {
-            document.body.removeChild(printPreview);
-        };
-
-        closeBtn.addEventListener('click', closePreview);
-        cancelBtn.addEventListener('click', closePreview);
-
-        // 打印按钮
-        const printBtn = printPreview.querySelector('.print-btn');// 打印按钮
-        printBtn.addEventListener('click', () => {
-            this.showPrinterSelection();
-            closePreview();
-        });
-
-        // 移动端触摸关闭支持
-        printPreview.addEventListener('touchstart', (e) => {
-            if (e.target === printPreview) {
-                closePreview();
+        // 复制模板内容到预览区域 - 确保打印样式应用
+        const previewTemplate = modal.querySelector('.preview-template');
+        const originalTemplate = this.template.cloneNode(true);
+        
+        // 为预览内容强制应用打印样式
+        const elements = originalTemplate.querySelectorAll('.editable-element');
+        elements.forEach(element => {
+            element.style.color = '#000000';
+            element.style.backgroundColor = 'transparent';
+            element.style.border = 'none';
+            element.style.boxShadow = 'none';
+            
+            // 确保文本元素有足够的对比度
+            if (element.classList.contains('text-element')) {
+                element.style.color = '#000000';
+                element.style.textShadow = 'none';
             }
+            
+            // 确保图片元素可见
+            if (element.classList.contains('image-element')) {
+                element.style.border = '1px solid #000000';
+                element.style.backgroundColor = '#ffffff';
+            }
+        });
+        
+        previewTemplate.appendChild(originalTemplate);
+        
+        // 绑定事件
+        modal.querySelector('.close-preview').addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+        
+        modal.querySelector('.btn-cancel').addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+        
+        modal.querySelector('.btn-print').addEventListener('click', () => {
+            this.showPrinterSelection();
+            document.body.removeChild(modal);
+        });
+        
+        // 触摸事件处理
+        modal.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+        });
+        
+        modal.addEventListener('touchmove', (e) => {
+            e.stopPropagation();
+        });
+        
+        modal.addEventListener('touchend', (e) => {
+            e.stopPropagation();
         });
     }
 
     // 显示打印机选择
     showPrinterSelection() {
-        // 检查浏览器是否支持打印对话框
-        if (typeof window.print === 'function') {
-            // 使用setTimeout确保在用户交互后调用，避免浏览器阻止
-            setTimeout(() => {
-                try {
-                    // 直接调用打印对话框（会显示打印机选择）
-                    window.print();
-                } catch (error) {
-                    console.error('打印出错:', error);
-                    // 如果直接打印失败，显示指导信息
-                    this.showPrintInstructions();
+        // 显示打印机选择对话框
+        if (window.print) {
+            // 在打印前强制应用打印样式
+            const elements = this.template.querySelectorAll('.editable-element');
+            elements.forEach(element => {
+                // 强制黑色文字和透明背景
+                element.style.color = '#000000';
+                element.style.backgroundColor = 'transparent';
+                element.style.border = 'none';
+                element.style.boxShadow = 'none';
+                element.style.textShadow = 'none';
+                element.style.opacity = '1';
+                
+                // 移除任何可能影响打印的样式
+                element.style.filter = 'none';
+                element.style.webkitFilter = 'none';
+                element.style.transform = 'none';
+                
+                // 确保文本元素可见
+                if (element.classList.contains('text-element')) {
+                    element.style.color = '#000000';
+                    element.style.textShadow = 'none';
+                    element.style.fontWeight = 'normal';
                 }
+                
+                // 确保图片元素可见
+                if (element.classList.contains('image-element')) {
+                    const img = element.querySelector('img');
+                    if (img) {
+                        img.style.opacity = '1';
+                        img.style.filter = 'none';
+                    }
+                    element.style.border = '1px solid #000000';
+                    element.style.backgroundColor = '#ffffff';
+                }
+            });
+            
+            // 添加短暂的延迟确保样式应用
+            setTimeout(() => {
+                window.print();
             }, 100);
         } else {
-            // 如果不支持，提供手动指导
-            this.showPrintInstructions();
+            alert('您的浏览器不支持打印功能，请使用Ctrl+P快捷键进行打印。');
         }
     }
 
