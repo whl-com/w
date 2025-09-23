@@ -96,20 +96,84 @@
 
 /* 打印预览优化 */
 @media print {
-    .text-element {
-        -webkit-print-color-adjust: exact;
-        color-adjust: exact;
-        print-color-adjust: exact;
-    }
-    
-    .image-element {
-        border: 1px solid #000000 !important;
-    }
-    
-    /* 确保所有文字黑色打印 */
-    * {
+    /* 确保打印时所有内容可见 */
+    body * {
+        visibility: visible !important;
         color: #000000 !important;
         background-color: transparent !important;
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    
+    /* 隐藏不需要打印的元素 */
+    .print-preview-modal,
+    .properties-panel,
+    .control-panel,
+    .mobile-tips,
+    .chrome-mobile-tips {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    
+    /* 模板容器 */
+    .template-container {
+        position: static !important;
+        width: 100% !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        background: white !important;
+    }
+    
+    /* 可编辑元素 */
+    .editable-element {
+        position: static !important;
+        display: block !important;
+        width: auto !important;
+        height: auto !important;
+        margin: 10px 0 !important;
+        padding: 0 !important;
+        left: auto !important;
+        top: auto !important;
+        transform: none !important;
+        box-shadow: none !important;
+        border: 1px solid #000000 !important;
+        background: white !important;
+        color: #000000 !important;
+        font-size: 14px !important;
+        line-height: 1.4 !important;
+    }
+    
+    /* 文本元素 */
+    .text-element {
+        border: none !important;
+        background: transparent !important;
+        color: #000000 !important;
+        text-shadow: none !important;
+        font-weight: normal !important;
+    }
+    
+    /* 图片元素 */
+    .image-element {
+        border: 1px solid #000000 !important;
+        background: white !important;
+        text-align: center;
+    }
+    
+    .image-element img {
+        display: block !important;
+        max-width: 100% !important;
+        height: auto !important;
+        margin: 0 auto !important;
+        border: none !important;
+    }
+    
+    /* 确保页面设置 */
+    @page {
+        margin: 0.5cm;
+        size: 12cm 18cm;
     }
 }
 

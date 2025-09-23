@@ -369,11 +369,17 @@ function fixChromeClickEvents() {
     const elements = document.querySelectorAll('.editable-element');
     elements.forEach(element => {
         element.addEventListener('touchstart', function(e) {
-            e.preventDefault();
+            // 只在非双击情况下阻止默认行为
+            if (!e.touches || e.touches.length !== 2) {
+                e.preventDefault();
+            }
         }, { passive: false });
         
         element.addEventListener('touchend', function(e) {
-            e.preventDefault();
+            // 只在非双击情况下阻止默认行为
+            if (!e.changedTouches || e.changedTouches.length !== 2) {
+                e.preventDefault();
+            }
         }, { passive: false });
     });
 }
