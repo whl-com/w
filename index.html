@@ -339,11 +339,15 @@
         </div>
         
         <div class="tool-group">
-            <button class="tool-btn" onclick="insertImage()" title="插入图片">🖼️</button>
-            <button class="tool-btn" onclick="insertTable()" title="插入表格">📊</button>
-            <button class="tool-btn" onclick="insertLink()" title="插入链接">🔗</button>
-            <button class="tool-btn" onclick="clearFormatting()" title="清除格式">🧹</button>
-        </div>
+                <button class="tool-btn" onclick="insertImage()" title="插入图片">🖼️</button>
+                <button class="tool-btn" onclick="insertTable()" title="插入表格">📊</button>
+                <button class="tool-btn" onclick="insertLink()" title="插入链接">🔗</button>
+                <button class="tool-btn" onclick="clearFormatting()" title="清除格式">🧹</button>
+            </div>
+            
+            <div class="tool-group">
+                <button class="tool-btn" onclick="toggleAllFeatures()" id="toggleFeaturesBtn">显示功能</button>
+            </div>
     </div>
     
     <div class="main-content">
@@ -517,6 +521,36 @@
             }
         }
         
+        // 切换所有辅助功能显示/隐藏
+        function toggleAllFeatures() {
+            const features = [
+                '.tool-group:nth-child(n+4)', // 隐藏的工具栏组
+                '.page-controls', // 页面控制
+                '.status-bar', // 状态栏
+                '.properties-panel' // 属性面板
+            ];
+            
+            const toggleBtn = document.getElementById('toggleFeaturesBtn');
+            let allHidden = true;
+            
+            features.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(element => {
+                    if (element.style.display === 'none') {
+                        element.style.display = '';
+                        allHidden = false;
+                    } else {
+                        element.style.display = 'none';
+                    }
+                });
+            });
+            
+            // 更新按钮文本
+            if (toggleBtn) {
+                toggleBtn.textContent = allHidden ? '隐藏功能' : '显示功能';
+            }
+        }
+        
         // 移动端触摸处理
         function handleTouch(e) {
             // 只在非编辑区域阻止默认行为
@@ -617,7 +651,11 @@
             const orientation = localStorage.getItem('editorOrientation');
             const zoom = localStorage.getItem('editorZoom');
             
-            if (content) {
+            // 清空默认内容，只在第一次加载时显示空白
+            if (!localStorage.getItem('firstLoad')) {
+                document.getElementById('editor').innerHTML = '';
+                localStorage.setItem('firstLoad', 'true');
+            } else if (content) {
                 document.getElementById('editor').innerHTML = content;
             }
             
@@ -631,36 +669,22 @@
             }
         }
         
-        // 保存文档
+        // 保存模板
         function saveDocument() {
             saveToLocalStorage();
-            alert('文档已保存到本地存储！');
+            alert('模板已保存到本地存储！');
         }
         
-        // 加载文档
+        // 加载模板
         function loadDocument() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.html,.txt';
-            
-            input.onchange = e => {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    if (file.name.endsWith('.html')) {
-                        document.getElementById('editor').innerHTML = e.target.result;
-                    } else {
-                        document.getElementById('editor').textContent = e.target.result;
-                    }
-                    updateStatus();
-                    saveToLocalStorage();
-                };
-                
-                reader.readAsText(file);
-            };
-            
-            input.click();
+            const content = localStorage.getItem('editorContent');
+            if (content) {
+                document.getElementById('editor').innerHTML = content;
+                alert('模板已从本地存储加载！');
+            } else {
+                alert('没有找到保存的模板！');
+            }
+            updateStatus();
         }
         
         // 插入图片
