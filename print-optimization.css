@@ -111,7 +111,11 @@
     .properties-panel,
     .control-panel,
     .mobile-tips,
-    .chrome-mobile-tips {
+    .chrome-mobile-tips,
+    .header,
+    .toolbar,
+    .container > header,
+    .container > .toolbar {
         display: none !important;
         visibility: hidden !important;
     }
@@ -139,8 +143,8 @@
         top: auto !important;
         transform: none !important;
         box-shadow: none !important;
-        border: 1px solid #000000 !important;
-        background: white !important;
+        border: none !important;
+        background: transparent !important;
         color: #000000 !important;
         font-size: 14px !important;
         line-height: 1.4 !important;
@@ -157,8 +161,8 @@
     
     /* 图片元素 */
     .image-element {
-        border: 1px solid #000000 !important;
-        background: white !important;
+        border: none !important;
+        background: transparent !important;
         text-align: center;
     }
     

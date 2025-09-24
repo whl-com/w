@@ -461,17 +461,15 @@ class PrintTemplateEditor {
 
     // 显示打印预览
     showPrintPreview() {
-        // 创建打印预览模态框
         const modal = document.createElement('div');
         modal.className = 'print-preview-modal';
         modal.innerHTML = `
-            <div class="print-preview-overlay"></div>
-            <div class="print-preview-content">
+            <div class="print-preview-container">
                 <div class="print-preview-header">
                     <h3>打印预览</h3>
                     <button class="close-preview">×</button>
                 </div>
-                <div class="print-preview-body">
+                <div class="print-preview-content">
                     <div class="preview-template"></div>
                 </div>
                 <div class="print-preview-footer">
