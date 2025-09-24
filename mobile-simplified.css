@@ -2,12 +2,12 @@
 
 @media (max-width: 768px) {
     /* 只保留第一个工具栏组（字体设置），隐藏其他所有工具栏组 */
-    .tool-group:not(:first-child) {
+    body .tool-group:not(:first-child) {
         display: none !important;
     }
     
     /* 确保第一个工具栏组显示 */
-    .tool-group:first-child {
+    body .tool-group:first-child {
         display: flex !important;
     }
     
