@@ -28,7 +28,10 @@ class MobileTouchHandler {
     addTouchEvents(element) {
         // 触摸开始
         element.addEventListener('touchstart', (e) => {
-            e.preventDefault();
+            // 只在非输入元素上阻止默认行为
+            if (!e.target.matches('input, textarea, select, [contenteditable="true"]')) {
+                e.preventDefault();
+            }
             this.touchStartTime = Date.now();
             this.touchStartX = e.touches[0].clientX;
             this.touchStartY = e.touches[0].clientY;
@@ -44,6 +47,11 @@ class MobileTouchHandler {
 
         // 触摸移动
         element.addEventListener('touchmove', (e) => {
+            // 只在非输入元素上阻止默认行为
+            if (!e.target.matches('input, textarea, select, [contenteditable="true"]')) {
+                e.preventDefault();
+            }
+            
             if (this.longPressTimer) {
                 clearTimeout(this.longPressTimer);
                 this.longPressTimer = null;
