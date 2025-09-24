@@ -146,8 +146,8 @@
         border: none !important;
         background: transparent !important;
         color: #000000 !important;
-        font-size: 14px !important;
-        line-height: 1.4 !important;
+        font-size: 16px !important; /* 增大打印字体 */
+        line-height: 1.6 !important;
     }
     
     /* 文本元素 */
@@ -174,10 +174,10 @@
         border: none !important;
     }
     
-    /* 确保页面设置 */
+    /* 确保页面设置 - A4尺寸 */
     @page {
-        margin: 0.5cm;
-        size: 12cm 18cm;
+        margin: 1cm;
+        size: A4;
     }
 }
 

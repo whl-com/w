@@ -80,8 +80,8 @@ body {
 }
 
 .template {
-    width: 340px; /* 12cm ≈ 340px (96dpi) */
-    height: 510px; /* 18cm ≈ 510px (96dpi) */
+    width: 595px; /* A4宽度 ≈ 595px (210mm) */
+    height: 842px; /* A4高度 ≈ 842px (297mm) */
     border: 2px dashed #ccc;
     background: white;
     position: relative;
@@ -110,8 +110,8 @@ body {
 
 .text-element {
     background: transparent;
-    resize: both;
-    overflow: auto;
+    resize: none; /* 移除调整大小手柄 */
+    overflow: hidden;
     min-height: 1.2em;
 }
 
@@ -614,5 +614,119 @@ body {
     
     .scan-controls .tool-btn {
         width: 100%;
+    }
+}
+
+/* 模板选择界面样式 */
+.template-selection-container {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.selection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.selection-header h3 {
+    color: #333;
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.close-selection {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-selection:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.template-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.template-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.template-name {
+    font-weight: 500;
+    color: #333;
+    flex: 1;
+}
+
+.load-btn, .delete-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
+}
+
+.load-btn:hover {
+    background: #0056b3;
+}
+
+.delete-btn {
+    background: #dc3545;
+}
+
+.delete-btn:hover {
+    background: #c82333;
+}
+
+/* 移动端模板选择优化 */
+@media (max-width: 768px) {
+    .template-selection-container {
+        width: 95%;
+        padding: 1rem;
+    }
+    
+    .template-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+    
+    .template-name {
+        text-align: center;
+    }
+    
+    .load-btn, .delete-btn {
+        width: 100%;
+        margin-left: 0;
     }
 }

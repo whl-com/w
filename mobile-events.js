@@ -39,7 +39,7 @@ class MobileTouchHandler {
                 this.editor.selectElement(element);
                 this.showEditIndicator(element);
                 this.isDragging = false;
-            }, 400); // 缩短长按时间到400ms
+            }, 2000); // 长按2秒触发编辑
         }, { passive: false });
 
         // 触摸移动

@@ -29,6 +29,16 @@ class PrintTemplateEditor {
             this.showPrintPreview();
         });
 
+        // 保存模板按钮
+        document.getElementById('saveTemplate').addEventListener('click', () => {
+            this.saveTemplate();
+        });
+
+        // 加载模板按钮
+        document.getElementById('loadTemplate').addEventListener('click', () => {
+            this.showTemplateSelection();
+        });
+
         // 保存属性按钮
         document.getElementById('saveProps').addEventListener('click', () => {
             this.saveProperties();
@@ -676,6 +686,7 @@ class PrintTemplateEditor {
             document.getElementById('fontSizeInput').value = parseInt(element.style.fontSize) || 14;
             document.getElementById('alignInput').value = element.style.textAlign || 'left';
             document.getElementById('stylePreset').value = this.getStylePreset(element);
+            document.getElementById('boldInput').checked = element.style.fontWeight === 'bold';
         } else if (element.classList.contains('image-element')) {
             document.getElementById('textProperties').style.display = 'none';
             document.getElementById('imageProperties').style.display = 'block';
@@ -696,6 +707,7 @@ class PrintTemplateEditor {
             const fontSize = document.getElementById('fontSizeInput').value + 'px';
             const align = document.getElementById('alignInput').value;
             const preset = document.getElementById('stylePreset').value;
+            const isBold = document.getElementById('boldInput').checked;
 
             // 处理换行符，将\n转换为<br>标签
             const formattedContent = content.replace(/\n/g, '<br>');
@@ -703,6 +715,7 @@ class PrintTemplateEditor {
             this.selectedElement.style.fontSize = fontSize;
             this.selectedElement.style.fontSize = fontSize;
             this.selectedElement.style.textAlign = align;
+            this.selectedElement.style.fontWeight = isBold ? 'bold' : 'normal';
             this.applyStylePreset(this.selectedElement, preset);
         } else if (this.selectedElement.classList.contains('image-element')) {
             const width = document.getElementById('imageWidthInput').value + 'px';
@@ -787,6 +800,182 @@ class PrintTemplateEditor {
                 // 保持当前样式
                 break;
         }
+    }
+
+    // 模板保存和加载相关方法
+    saveTemplate() {
+        const templateName = prompt('请输入模板名称：');
+        if (!templateName) return;
+        
+        const elements = this.template.querySelectorAll('.editable-element');
+        const templateData = {
+            name: templateName,
+            elements: []
+        };
+        
+        elements.forEach(element => {
+            const elementData = {
+                type: element.classList.contains('text-element') ? 'text' : 'image',
+                content: element.innerHTML,
+                style: {
+                    left: element.style.left,
+                    top: element.style.top,
+                    fontSize: element.style.fontSize,
+                    textAlign: element.style.textAlign,
+                    fontWeight: element.style.fontWeight,
+                    width: element.style.width,
+                    height: element.style.height
+                }
+            };
+            
+            if (element.classList.contains('image-element')) {
+                const img = element.querySelector('img');
+                elementData.src = img ? img.src : '';
+            }
+            
+            templateData.elements.push(elementData);
+        });
+        
+        // 保存到localStorage
+        const templates = JSON.parse(localStorage.getItem('printTemplates') || '[]');
+        templates.push(templateData);
+        localStorage.setItem('printTemplates', JSON.stringify(templates));
+        
+        alert(`模板"${templateName}"保存成功！`);
+    }
+
+    showTemplateSelection() {
+        const templates = JSON.parse(localStorage.getItem('printTemplates') || '[]');
+        if (templates.length === 0) {
+            alert('没有保存的模板，请先保存一个模板。');
+            return;
+        }
+        
+        // 创建模板选择界面
+        const selectionOverlay = document.createElement('div');
+        selectionOverlay.className = 'template-selection-overlay';
+        selectionOverlay.innerHTML = `
+            <div class="template-selection-container">
+                <div class="selection-header">
+                    <h3>选择模板</h3>
+                    <button class="close-selection">×</button>
+                </div>
+                <div class="template-list">
+                    ${templates.map((template, index) => `
+                        <div class="template-item" data-index="${index}">
+                            <span class="template-name">${template.name}</span>
+                            <button class="load-btn">加载</button>
+                            <button class="delete-btn">删除</button>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+        selectionOverlay.style.position = 'fixed';
+        selectionOverlay.style.top = '0';
+        selectionOverlay.style.left = '0';
+        selectionOverlay.style.width = '100%';
+        selectionOverlay.style.height = '100%';
+        selectionOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        selectionOverlay.style.zIndex = '2000';
+        selectionOverlay.style.display = 'flex';
+        selectionOverlay.style.justifyContent = 'center';
+        selectionOverlay.style.alignItems = 'center';
+
+        document.body.appendChild(selectionOverlay);
+
+        // 关闭选择界面
+        const closeBtn = selectionOverlay.querySelector('.close-selection');
+        closeBtn.addEventListener('click', () => {
+            document.body.removeChild(selectionOverlay);
+        });
+
+        // 加载模板
+        selectionOverlay.querySelectorAll('.load-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const index = parseInt(e.target.closest('.template-item').dataset.index);
+                this.loadTemplate(templates[index]);
+                document.body.removeChild(selectionOverlay);
+            });
+        });
+
+        // 删除模板
+        selectionOverlay.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const index = parseInt(e.target.closest('.template-item').dataset.index);
+                if (confirm(`确定要删除模板"${templates[index].name}"吗？`)) {
+                    templates.splice(index, 1);
+                    localStorage.setItem('printTemplates', JSON.stringify(templates));
+                    document.body.removeChild(selectionOverlay);
+                    this.showTemplateSelection(); // 刷新列表
+                }
+            });
+        });
+    }
+
+    loadTemplate(templateData) {
+        // 清空当前模板
+        this.template.innerHTML = '';
+        this.elementCount = 0;
+        
+        // 加载模板元素
+        templateData.elements.forEach(elementData => {
+            if (elementData.type === 'text') {
+                const element = document.createElement('div');
+                element.className = 'editable-element text-element';
+                element.id = `element-${++this.elementCount}`;
+                element.innerHTML = elementData.content;
+                
+                // 应用样式
+                Object.assign(element.style, elementData.style);
+                
+                // 添加事件监听
+                element.addEventListener('dblclick', (e) => {
+                    e.stopPropagation();
+                    this.selectElement(element);
+                });
+
+                element.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.selectElementWithoutPanel(element);
+                });
+
+                this.template.appendChild(element);
+                this.makeDraggable(element);
+            } else if (elementData.type === 'image') {
+                const element = document.createElement('div');
+                element.className = 'editable-element image-element';
+                element.id = `element-${++this.elementCount}`;
+                
+                // 应用样式
+                Object.assign(element.style, elementData.style);
+                
+                const img = document.createElement('img');
+                img.src = elementData.src;
+                img.style.maxWidth = '100%';
+                img.style.maxHeight = '100%';
+                
+                element.appendChild(img);
+
+                // 添加事件监听
+                element.addEventListener('dblclick', (e) => {
+                    e.stopPropagation();
+                    this.selectElement(element);
+                });
+
+                element.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.selectElementWithoutPanel(element);
+                });
+
+                this.template.appendChild(element);
+                this.makeDraggable(element);
+                this.makeResizable(element);
+            }
+        });
+        
+        alert(`模板"${templateData.name}"加载成功！`);
     }
 }
 
