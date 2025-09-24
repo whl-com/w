@@ -1,7 +1,7 @@
 /* 移动端兼容性修复 */
 
 /* 1. 触摸事件支持 */
-.editable-element {
+.editable-element:not(input):not(textarea):not([contenteditable="true"]) {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -90,7 +90,6 @@
 /* 7. 防止移动端缩放 */
 input, textarea, select {
     font-size: 16px !important;
-    transform: scale(1);
 }
 
 /* 8. 移动端安全区域 */
