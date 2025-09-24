@@ -55,7 +55,10 @@ class PrintTemplateEditor {
 
         // 触摸开始
         element.addEventListener('touchstart', (e) => {
-            e.preventDefault();
+            // 只在非输入元素上阻止默认行为
+            if (!e.target.matches('input, textarea, select, [contenteditable="true"]')) {
+                e.preventDefault();
+            }
             touchStartTime = Date.now();
             isDragging = false;
             
