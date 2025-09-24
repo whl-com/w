@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="print-optimization.css">
     <link rel="stylesheet" href="mobile-fix.css">
     <link rel="stylesheet" href="mobile-properties-fix.css">
+    <link rel="stylesheet" href="mobile-simplified.css">
     <style>
         * {
             margin: 0;
@@ -397,14 +398,18 @@
             </div>
             
             <div class="status-bar">
-                <div id="wordCount">字数: 0</div>
-                <div id="pageInfo">页面: A4 竖版</div>
-                <div id="cursorPosition">行: 1, 列: 1</div>
-            </div>
+            <div id="wordCount">字数: 0</div>
+            <div id="pageInfo">页面: A4 竖版</div>
+            <div id="cursorPosition">行: 1, 列: 1</div>
+        </div>
+        
+        <!-- 移动端属性面板控制按钮 -->
+        <button class="show-properties-btn" onclick="togglePropertiesPanel()" style="display: none;">⚙️</button>
         </div>
         
         <div class="properties-panel" id="propertiesPanel">
             <h3>属性设置</h3>
+            <button class="close-properties-btn" onclick="togglePropertiesPanel()">×</button>
             
             <!-- 文本元素属性 -->
             <div id="textProperties" class="element-properties">
@@ -468,11 +473,47 @@
             loadFromLocalStorage();
             updateStatus();
             setupEventListeners();
+            setupMobileUI();
             
             // 移动端适配
             if ('ontouchstart' in window) {
                 document.addEventListener('touchstart', handleTouch, { passive: false });
                 document.addEventListener('touchmove', handleTouch, { passive: false });
+            }
+        }
+        
+        // 设置移动端UI
+        function setupMobileUI() {
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // 显示属性面板控制按钮
+                const showPropsBtn = document.querySelector('.show-properties-btn');
+                if (showPropsBtn) {
+                    showPropsBtn.style.display = 'block';
+                }
+                
+                // 默认隐藏属性面板
+                const propsPanel = document.querySelector('.properties-panel');
+                if (propsPanel) {
+                    propsPanel.style.display = 'none';
+                }
+            }
+        }
+        
+        // 切换属性面板显示/隐藏
+        function togglePropertiesPanel() {
+            const propsPanel = document.querySelector('.properties-panel');
+            const showPropsBtn = document.querySelector('.show-properties-btn');
+            
+            if (propsPanel && showPropsBtn) {
+                if (propsPanel.style.display === 'none' || !propsPanel.style.display) {
+                    propsPanel.style.display = 'block';
+                    showPropsBtn.style.display = 'none';
+                } else {
+                    propsPanel.style.display = 'none';
+                    showPropsBtn.style.display = 'block';
+                }
             }
         }
         
