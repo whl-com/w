@@ -13,33 +13,9 @@
     <link rel="stylesheet" href="print-optimization.css">
     <link rel="stylesheet" href="mobile-fix.css">
     <link rel="stylesheet" href="mobile-properties-fix.css">
-    <link rel="stylesheet" href="mobile-simplified.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Microsoft YaHei', sans-serif;
-            background: #f5f7fa;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .header {
-            background: #2c3e50;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .toolbar {
+        /* Word风格编辑器工具栏样式 */
+        .editor-toolbar {
             background: #34495e;
             padding: 10px 20px;
             display: flex;
@@ -57,7 +33,7 @@
             border-radius: 6px;
         }
         
-        .tool-btn {
+        .editor-btn {
             background: #4a6572;
             border: none;
             color: white;
@@ -68,31 +44,15 @@
             transition: background 0.2s;
         }
         
-        .tool-btn:hover {
+        .editor-btn:hover {
             background: #546e7a;
         }
         
-        .tool-btn.active {
+        .editor-btn.active {
             background: #1976d2;
         }
         
-        .tool-btn.primary {
-            background: #3498db;
-        }
-        
-        .tool-btn.primary:hover {
-            background: #2980b9;
-        }
-        
-        .tool-btn.danger {
-            background: #e74c3c;
-        }
-        
-        .tool-btn.danger:hover {
-            background: #c0392b;
-        }
-        
-        select, input[type="number"], input[type="color"] {
+        .editor-select, .editor-input {
             padding: 6px 8px;
             border: 1px solid #546e7a;
             border-radius: 4px;
@@ -100,23 +60,7 @@
             color: white;
         }
         
-        .main-content {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-        }
-        
-        .editor-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: white;
-            margin: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
+        /* 页面控制 */
         .page-controls {
             padding: 15px 20px;
             background: #ecf0f1;
@@ -140,9 +84,10 @@
             background: #2980b9;
         }
         
+        /* 编辑器区域 */
         .editor-area {
             flex: 1;
-            padding: 40px;
+            padding: 20px;
             overflow: auto;
             background: #fafafa;
             position: relative;
@@ -167,6 +112,7 @@
             min-height: 400px;
             outline: none;
             line-height: 1.6;
+            font-size: 14px;
         }
         
         .editable-content:focus {
@@ -174,62 +120,31 @@
             outline: none;
         }
         
-        .status-bar {
-            background: #34495e;
-            color: white;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
+        /* 打印预览 */
+        .print-preview {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
         
-        .properties-panel {
-            width: 300px;
+        .print-preview-content {
             background: white;
-            border-left: 1px solid #ddd;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        
-        .property-group {
-            margin-bottom: 15px;
-        }
-        
-        .property-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
-        }
-        
-        .property-group input,
-        .property-group textarea,
-        .property-group select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        
-        .property-group input:focus,
-        .property-group textarea:focus,
-        .property-group select:focus {
-            border-color: #667eea;
-            outline: none;
-        }
-        
-        .property-group textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-        
-        .element-properties {
-            margin-bottom: 20px;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow: auto;
         }
         
         @media print {
-            .header, .toolbar, .properties-panel, .page-controls, .status-bar {
+            .header, .editor-toolbar, .properties-panel, .page-controls {
                 display: none !important;
             }
             
@@ -238,7 +153,7 @@
                 padding: 0;
             }
             
-            .editor-container {
+            .template-container {
                 margin: 0;
                 border-radius: 0;
                 box-shadow: none;
@@ -255,22 +170,7 @@
         
         /* 移动端适配 */
         @media (max-width: 768px) {
-            .main-content {
-                flex-direction: column;
-            }
-            
-            .properties-panel {
-                width: 100%;
-                border-left: none;
-                border-top: 1px solid #ddd;
-            }
-            
-            .page {
-                width: 100%;
-                min-height: auto;
-            }
-            
-            .toolbar {
+            .editor-toolbar {
                 padding: 8px 12px;
                 gap: 8px;
             }
@@ -280,140 +180,110 @@
             }
             
             .editor-area {
+                padding: 15px;
+            }
+            
+            .page {
+                width: 100%;
+                min-height: auto;
                 padding: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>📝 打印模板编辑器</h1>
-        <div class="header-actions">
-            <button class="tool-btn" onclick="saveDocument()">💾 保存</button>
-            <button class="tool-btn" onclick="loadDocument()">📂 打开</button>
-            <button class="tool-btn primary" onclick="printDocument()">🖨️ 打印</button>
-        </div>
-    </div>
-    
-    <div class="toolbar">
-        <div class="tool-group">
-            <select id="fontFamily" onchange="formatText('fontName', this.value)">
-                <option value="Microsoft YaHei">微软雅黑</option>
-                <option value="SimSun">宋体</option>
-                <option value="SimHei">黑体</option>
-                <option value="KaiTi">楷体</option>
-                <option value="Arial">Arial</option>
-                <option value="Times New Roman">Times New Roman</option>
-            </select>
-            
-            <select id="fontSize" onchange="formatText('fontSize', this.value)">
-                <option value="1">8px</option>
-                <option value="2">10px</option>
-                <option value="3" selected>12px</option>
-                <option value="4">14px</option>
-                <option value="5">18px</option>
-                <option value="6">24px</option>
-                <option value="7">36px</option>
-            </select>
-            
-            <input type="color" id="fontColor" onchange="formatText('foreColor', this.value)" value="#000000">
-        </div>
-        
-        <div class="tool-group">
-            <button class="tool-btn" onclick="formatText('bold')" title="加粗"><b>B</b></button>
-            <button class="tool-btn" onclick="formatText('italic')" title="斜体"><i>I</i></button>
-        </div>
-        
-        <div class="tool-group">
-            <button class="tool-btn" onclick="formatText('justifyLeft')" title="左对齐">⬅️</button>
-            <button class="tool-btn" onclick="formatText('justifyCenter')" title="居中">🔘</button>
-            <button class="tool-btn" onclick="formatText('justifyRight')" title="右对齐">➡️</button>
-            <button class="tool-btn" onclick="formatText('justifyFull')" title="两端对齐">⬌</button>
-        </div>
-        
-        <div class="tool-group">
-            <button class="tool-btn" onclick="formatText('insertUnorderedList')" title="项目符号">•</button>
-            <button class="tool-btn" onclick="formatText('insertOrderedList')" title="编号">1.</button>
-            <button class="tool-btn" onclick="formatText('outdent')" title="减少缩进">←</button>
-            <button class="tool-btn" onclick="formatText('indent')" title="增加缩进">→</button>
-        </div>
-        
-        <div class="tool-group">
-                <button class="tool-btn" onclick="insertImage()" title="插入图片">🖼️</button>
-                <button class="tool-btn" onclick="insertTable()" title="插入表格">📊</button>
-                <button class="tool-btn" onclick="insertLink()" title="插入链接">🔗</button>
-                <button class="tool-btn" onclick="clearFormatting()" title="清除格式">🧹</button>
+    <div class="container">
+        <header class="header">
+            <h1>打印模板编辑器</h1>
+            <div class="toolbar">
+                <button id="addText" class="tool-btn">添加文本</button>
+                <button id="addImage" class="tool-btn">添加图片</button>
+                <button id="scanText" class="tool-btn">扫描识别</button>
+                <button id="saveTemplate" class="tool-btn">保存模板</button>
+                <button id="loadTemplate" class="tool-btn">加载模板</button>
+                <button id="print" class="tool-btn primary">打印预览</button>
+            </div>
+        </header>
+
+        <!-- Word风格编辑器工具栏 -->
+        <div class="editor-toolbar">
+            <div class="tool-group">
+                <select id="fontFamily" class="editor-select">
+                    <option value="Microsoft YaHei">微软雅黑</option>
+                    <option value="SimSun">宋体</option>
+                    <option value="SimHei">黑体</option>
+                    <option value="KaiTi">楷体</option>
+                    <option value="Arial">Arial</option>
+                </select>
+                
+                <select id="fontSize" class="editor-select">
+                    <option value="1">8px</option>
+                    <option value="2">10px</option>
+                    <option value="3" selected>12px</option>
+                    <option value="4">14px</option>
+                    <option value="5">18px</option>
+                    <option value="6">24px</option>
+                </select>
             </div>
             
             <div class="tool-group">
-                <button class="tool-btn" onclick="toggleAllFeatures()" id="toggleFeaturesBtn">显示功能</button>
-            </div>
-    </div>
-    
-    <div class="main-content">
-        <div class="editor-container">
-            <div class="page-controls">
-                <div>
-                    <span>页面设置: </span>
-                    <button class="page-size-btn active" onclick="setPageOrientation('portrait', this)">竖版 A4</button>
-                <button class="page-size-btn" onclick="setPageOrientation('landscape', this)">横版 A4</button>
-                </div>
-                <div>
-                    <span>缩放: </span>
-                    <select id="zoomLevel" onchange="setZoom(this.value)">
-                        <option value="0.5">50%</option>
-                        <option value="0.75">75%</option>
-                        <option value="1" selected>100%</option>
-                        <option value="1.25">125%</option>
-                        <option value="1.5">150%</option>
-                        <option value="2">200%</option>
-                    </select>
-                </div>
+                <button id="boldBtn" class="editor-btn" title="加粗"><b>B</b></button>
             </div>
             
-            <div class="editor-area">
-                <div class="page" id="page">
-                    <div 
-                        class="editable-content" 
-                        id="editor" 
-                        contenteditable="true"
-                        oninput="updateStatus()"
-                    >
-                        <h1 style="text-align: center; color: #2c3e50;">欢迎使用打印模板编辑器</h1>
-                        <p style="text-align: center; color: #7f8c8d;">这是一个功能丰富的打印模板编辑器，支持类似Word的编辑功能</p>
-                        
-                        <hr style="margin: 30px 0; border: 1px solid #ecf0f1;">
-                        
-                        <h2>📋 功能特性</h2>
-                        <ul>
-                            <li><strong>文本格式化</strong>：加粗、斜体</li>
-                            <li><strong>字体设置</strong>：字体类型、大小、颜色</li>
-                            <li><strong>段落对齐</strong>：左对齐、居中、右对齐、两端对齐</li>
-                            <li><strong>列表功能</strong>：项目符号、编号列表</li>
-                            <li><strong>页面布局</strong>：竖版/横版切换</li>
-                            <li><strong>打印支持</strong>：完美打印输出</li>
-                        </ul>
-                        
-                        <p style="background: #f8f9fa; padding: 15px; border-radius: 6px; border-left: 4px solid #3498db;">
-                            <strong>提示：</strong> 所有编辑内容会自动保存到浏览器本地存储中
-                        </p>
+            <div class="tool-group">
+                <button id="alignLeft" class="editor-btn" title="左对齐">⬅️</button>
+                <button id="alignCenter" class="editor-btn" title="居中">🔘</button>
+                <button id="alignRight" class="editor-btn" title="右对齐">➡️</button>
+            </div>
+        </div>
+
+        <!-- 页面控制 -->
+        <div class="page-controls">
+            <div>
+                <span>页面设置: </span>
+                <button id="portraitBtn" class="page-size-btn active">竖版 A4</button>
+                <button id="landscapeBtn" class="page-size-btn">横版 A4</button>
+            </div>
+            <div>
+                <span>缩放: </span>
+                <select id="zoomLevel" class="editor-select" onchange="setZoom(this.value)">
+                    <option value="0.8">80%</option>
+                    <option value="1" selected>100%</option>
+                    <option value="1.2">120%</option>
+                </select>
+            </div>
+        </div>
+
+        <main class="main-content">
+            <div class="template-container">
+                <div class="editor-area">
+                    <div class="page" id="page">
+                        <div 
+                            class="editable-content" 
+                            id="editor" 
+                            contenteditable="true"
+                            oninput="updateStatus()"
+                        >
+                            <h1 style="text-align: center; color: #2c3e50;">打印模板编辑器</h1>
+                            <p style="text-align: center; color: #7f8c8d;">在此处编辑您的打印模板内容</p>
+                            
+                            <hr style="margin: 30px 0; border: 1px solid #ecf0f1;">
+                            
+                            <h2>使用说明</h2>
+                            <ul>
+                                <li>直接点击文本进行编辑</li>
+                                <li>使用工具栏设置字体、大小、加粗和对齐方式</li>
+                                <li>支持横版和竖版打印</li>
+                                <li>使用左侧按钮添加文本和图片元素</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="status-bar">
-            <div id="wordCount">字数: 0</div>
-            <div id="pageInfo">页面: A4 竖版</div>
-            <div id="cursorPosition">行: 1, 列: 1</div>
-        </div>
-        
-        <!-- 移动端属性面板控制按钮 -->
-        <button class="show-properties-btn" onclick="togglePropertiesPanel()" style="display: none;">⚙️</button>
-        </div>
-        
+        </main>
+
         <div class="properties-panel" id="propertiesPanel">
             <h3>属性设置</h3>
-            <button class="close-properties-btn" onclick="togglePropertiesPanel()">×</button>
             
             <!-- 文本元素属性 -->
             <div id="textProperties" class="element-properties">
@@ -466,293 +336,22 @@
                 <button id="deleteElement" class="tool-btn danger">删除</button>
             </div>
         </div>
+
+        <!-- 打印预览模态框 -->
+        <div class="print-preview" id="printPreview">
+            <div class="print-preview-content">
+                <h2>打印预览</h2>
+                <div id="previewContent"></div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button id="confirmPrint" class="editor-btn">打印</button>
+                    <button id="closePreview" class="editor-btn" style="background: #95a5a6;">关闭</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script>
-        let currentOrientation = 'portrait';
-        let currentZoom = 1;
-        
-        // 初始化编辑器
-        function initEditor() {
-            loadFromLocalStorage();
-            updateStatus();
-            setupEventListeners();
-            setupMobileUI();
-            
-            // 移动端适配
-            if ('ontouchstart' in window) {
-                document.addEventListener('touchstart', handleTouch, { passive: false });
-                document.addEventListener('touchmove', handleTouch, { passive: false });
-            }
-        }
-        
-        // 设置移动端UI
-        function setupMobileUI() {
-            const isMobile = window.innerWidth <= 768;
-            
-            if (isMobile) {
-                // 显示属性面板控制按钮
-                const showPropsBtn = document.querySelector('.show-properties-btn');
-                if (showPropsBtn) {
-                    showPropsBtn.style.display = 'block';
-                }
-                
-                // 默认隐藏属性面板
-                const propsPanel = document.querySelector('.properties-panel');
-                if (propsPanel) {
-                    propsPanel.style.display = 'none';
-                }
-            }
-        }
-        
-        // 切换属性面板显示/隐藏
-        function togglePropertiesPanel() {
-            const propsPanel = document.querySelector('.properties-panel');
-            const showPropsBtn = document.querySelector('.show-properties-btn');
-            
-            if (propsPanel && showPropsBtn) {
-                if (propsPanel.style.display === 'none' || !propsPanel.style.display) {
-                    propsPanel.style.display = 'block';
-                    showPropsBtn.style.display = 'none';
-                } else {
-                    propsPanel.style.display = 'none';
-                    showPropsBtn.style.display = 'block';
-                }
-            }
-        }
-        
-        // 切换所有辅助功能显示/隐藏
-        function toggleAllFeatures() {
-            const features = [
-                '.tool-group:nth-child(n+4)', // 隐藏的工具栏组
-                '.page-controls', // 页面控制
-                '.status-bar', // 状态栏
-                '.properties-panel' // 属性面板
-            ];
-            
-            const toggleBtn = document.getElementById('toggleFeaturesBtn');
-            let allHidden = true;
-            
-            features.forEach(selector => {
-                const elements = document.querySelectorAll(selector);
-                elements.forEach(element => {
-                    if (element.style.display === 'none') {
-                        element.style.display = '';
-                        allHidden = false;
-                    } else {
-                        element.style.display = 'none';
-                    }
-                });
-            });
-            
-            // 更新按钮文本
-            if (toggleBtn) {
-                toggleBtn.textContent = allHidden ? '隐藏功能' : '显示功能';
-            }
-        }
-        
-        // 移动端触摸处理
-        function handleTouch(e) {
-            // 只在非编辑区域阻止默认行为
-            if (!e.target.isContentEditable && 
-                !e.target.matches('input, textarea, select, button, [contenteditable="true"]')) {
-                e.preventDefault();
-            }
-        }
-        
-        // 设置事件监听
-        function setupEventListeners() {
-            const editor = document.getElementById('editor');
-            
-            editor.addEventListener('keyup', updateStatus);
-            editor.addEventListener('mouseup', updateStatus);
-            editor.addEventListener('click', updateStatus);
-            
-            // 自动保存
-            editor.addEventListener('input', debounce(saveToLocalStorage, 1000));
-            
-            // 粘贴时清理格式
-            editor.addEventListener('paste', (e) => {
-                e.preventDefault();
-                const text = (e.clipboardData || window.clipboardData).getData('text/plain');
-                document.execCommand('insertText', false, text);
-            });
-        }
-        
-        // 防抖函数
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-        
-        // 文本格式化
-        function formatText(command, value = null) {
-            document.execCommand(command, false, value);
-            document.getElementById('editor').focus();
-            updateStatus();
-        }
-        
-        // 设置页面方向
-        function setPageOrientation(orientation, targetButton = null) {
-            const page = document.getElementById('page');
-            const buttons = document.querySelectorAll('.page-size-btn');
-            
-            buttons.forEach(btn => btn.classList.remove('active'));
-            
-            // 只有当通过按钮点击调用时才激活对应按钮
-            if (targetButton) {
-                targetButton.classList.add('active');
-            } else {
-                // 通过代码调用时，激活对应的按钮
-                const targetBtn = document.querySelector(`.page-size-btn[onclick*="'${orientation}'"]`);
-                if (targetBtn) {
-                    targetBtn.classList.add('active');
-                }
-            }
-            
-            currentOrientation = orientation;
-            
-            if (orientation === 'landscape') {
-                page.classList.add('landscape');
-                document.getElementById('pageInfo').textContent = '页面: A4 横版';
-            } else {
-                page.classList.remove('landscape');
-                document.getElementById('pageInfo').textContent = '页面: A4 竖版';
-            }
-            
-            saveToLocalStorage();
-        }
-        
-        // 设置缩放
-        function setZoom(zoom) {
-            currentZoom = parseFloat(zoom);
-            document.getElementById('editor').style.transform = `scale(${currentZoom})`;
-            document.getElementById('editor').style.transformOrigin = 'top left';
-        }
-        
-        // 更新状态栏
-        function updateStatus() {
-            const editor = document.getElementById('editor');
-            const text = editor.textContent || editor.innerText;
-            
-            // 字数统计
-            const wordCount = text.trim().length;
-            document.getElementById('wordCount').textContent = `字数: ${wordCount}`;
-        }
-        
-        // 保存到本地存储
-        function saveToLocalStorage() {
-            const content = document.getElementById('editor').innerHTML;
-            localStorage.setItem('editorContent', content);
-            localStorage.setItem('editorOrientation', currentOrientation);
-            localStorage.setItem('editorZoom', currentZoom);
-        }
-        
-        // 从本地存储加载
-        function loadFromLocalStorage() {
-            const content = localStorage.getItem('editorContent');
-            const orientation = localStorage.getItem('editorOrientation');
-            const zoom = localStorage.getItem('editorZoom');
-            
-            // 清空默认内容，只在第一次加载时显示空白
-            if (!localStorage.getItem('firstLoad')) {
-                document.getElementById('editor').innerHTML = '';
-                localStorage.setItem('firstLoad', 'true');
-            } else if (content) {
-                document.getElementById('editor').innerHTML = content;
-            }
-            
-            if (orientation) {
-                setPageOrientation(orientation);
-            }
-            
-            if (zoom) {
-                document.getElementById('zoomLevel').value = zoom;
-                setZoom(zoom);
-            }
-        }
-        
-        // 保存模板
-        function saveDocument() {
-            saveToLocalStorage();
-            alert('模板已保存到本地存储！');
-        }
-        
-        // 加载模板
-        function loadDocument() {
-            const content = localStorage.getItem('editorContent');
-            if (content) {
-                document.getElementById('editor').innerHTML = content;
-                alert('模板已从本地存储加载！');
-            } else {
-                alert('没有找到保存的模板！');
-            }
-            updateStatus();
-        }
-        
-        // 插入图片
-        function insertImage() {
-            const url = prompt('请输入图片URL:');
-            if (url) {
-                document.execCommand('insertImage', false, url);
-                updateStatus();
-            }
-        }
-        
-        // 插入表格
-        function insertTable() {
-            const rows = prompt('请输入行数:', '3');
-            const cols = prompt('请输入列数:', '3');
-            
-            if (rows && cols) {
-                let tableHTML = '<table style="width: 100%; border-collapse: collapse; margin: 10px 0;">';
-                
-                for (let i = 0; i < rows; i++) {
-                    tableHTML += '<tr>';
-                    for (let j = 0; j < cols; j++) {
-                        tableHTML += '<td style="border: 1px solid #ddd; padding: 8px;">&nbsp;</td>';
-                    }
-                    tableHTML += '</tr>';
-                }
-                
-                tableHTML += '</table>';
-                document.execCommand('insertHTML', false, tableHTML);
-                updateStatus();
-            }
-        }
-        
-        // 插入链接
-        function insertLink() {
-            const url = prompt('请输入链接URL:');
-            if (url) {
-                document.execCommand('createLink', false, url);
-                updateStatus();
-            }
-        }
-        
-        // 清除格式
-        function clearFormatting() {
-            document.execCommand('removeFormat', false, null);
-            document.execCommand('unlink', false, null);
-            updateStatus();
-        }
-        
-        // 打印文档
-        function printDocument() {
-            window.print();
-        }
-        
-        // 初始化
-        window.onload = initEditor;
-    </script>
-
-    <!-- 移除了不需要的脚本引用 -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="script.js"></script>
+    <script src="mobile-events.js"></script>
 </body>
 </html>

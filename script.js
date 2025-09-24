@@ -6,6 +6,7 @@ class PrintTemplateEditor {
         this.elementCount = 0;
         this.mobileTouchHandler = null;
         
+        // 立即初始化事件监听器，因为已经在DOMContentLoaded中调用
         this.initEventListeners();
         this.initMobileTouch();
     }
@@ -1086,20 +1087,283 @@ class PrintTemplateEditor {
     }
 }
 
-// 初始化编辑器
+// Word编辑器核心功能 - 简化版
+class WordStyleEditor {
+    constructor() {
+        this.currentOrientation = 'portrait';
+        this.currentZoom = 1;
+        this.init();
+    }
+    
+    init() {
+        this.setupEventListeners();
+        this.loadFromLocalStorage();
+        this.updateStatus();
+    }
+    
+    setupEventListeners() {
+        const editor = document.getElementById('editor');
+        
+        if (editor) {
+            editor.addEventListener('keyup', () => this.updateStatus());
+            editor.addEventListener('mouseup', () => this.updateStatus());
+            editor.addEventListener('click', () => this.updateStatus());
+            
+            // 自动保存
+            editor.addEventListener('input', this.debounce(() => this.saveToLocalStorage(), 1000));
+        }
+        
+        // 工具栏按钮事件
+        this.setupToolbarEvents();
+    }
+    
+    // 设置工具栏事件
+    setupToolbarEvents() {
+        // 字体选择
+        const fontSelect = document.getElementById('fontFamily');
+        if (fontSelect) {
+            fontSelect.addEventListener('change', (e) => {
+                this.formatText('fontName', e.target.value);
+            });
+        }
+        
+        // 字号设置
+        const fontSizeSelect = document.getElementById('fontSize');
+        if (fontSizeSelect) {
+            fontSizeSelect.addEventListener('change', (e) => {
+                this.formatText('fontSize', e.target.value);
+            });
+        }
+        
+        // 加粗按钮
+        const boldBtn = document.getElementById('boldBtn');
+        if (boldBtn) {
+            boldBtn.addEventListener('click', () => {
+                this.formatText('bold');
+                boldBtn.classList.toggle('active');
+            });
+        }
+        
+        // 左对齐
+        const alignLeftBtn = document.getElementById('alignLeft');
+        if (alignLeftBtn) {
+            alignLeftBtn.addEventListener('click', () => {
+                this.formatText('justifyLeft');
+                this.updateAlignmentButtons('left');
+            });
+        }
+        
+        // 居中对齐
+        const alignCenterBtn = document.getElementById('alignCenter');
+        if (alignCenterBtn) {
+            alignCenterBtn.addEventListener('click', () => {
+                this.formatText('justifyCenter');
+                this.updateAlignmentButtons('center');
+            });
+        }
+        
+        // 右对齐
+        const alignRightBtn = document.getElementById('alignRight');
+        if (alignRightBtn) {
+            alignRightBtn.addEventListener('click', () => {
+                this.formatText('justifyRight');
+                this.updateAlignmentButtons('right');
+            });
+        }
+        
+        // 页面方向切换
+        const portraitBtn = document.getElementById('portraitBtn');
+        const landscapeBtn = document.getElementById('landscapeBtn');
+        if (portraitBtn && landscapeBtn) {
+            portraitBtn.addEventListener('click', () => this.setPageOrientation('portrait'));
+            landscapeBtn.addEventListener('click', () => this.setPageOrientation('landscape'));
+        }
+        
+        // 缩放控制
+        const zoomSelect = document.getElementById('zoomLevel');
+        if (zoomSelect) {
+            zoomSelect.addEventListener('change', (e) => {
+                this.setZoom(e.target.value);
+            });
+        }
+        
+        // 打印按钮
+        const printBtn = document.getElementById('print');
+        if (printBtn) {
+            printBtn.addEventListener('click', () => {
+                this.printDocument();
+            });
+        }
+        
+        // 关闭打印预览
+        const closePreviewBtn = document.getElementById('closePreview');
+        if (closePreviewBtn) {
+            closePreviewBtn.addEventListener('click', () => {
+                this.closePrintPreview();
+            });
+        }
+        
+        // 确认打印
+        const confirmPrintBtn = document.getElementById('confirmPrint');
+        if (confirmPrintBtn) {
+            confirmPrintBtn.addEventListener('click', () => {
+                window.print();
+                this.closePrintPreview();
+            });
+        }
+    }
+    
+    // 更新对齐按钮状态
+    updateAlignmentButtons(alignment) {
+        const buttons = ['alignLeft', 'alignCenter', 'alignRight'];
+        buttons.forEach(btnId => {
+            const btn = document.getElementById(btnId);
+            if (btn) {
+                btn.classList.remove('active');
+            }
+        });
+        
+        const activeBtn = document.getElementById(`align${alignment.charAt(0).toUpperCase() + alignment.slice(1)}`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
+    }
+    
+    // 防抖函数
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+    
+    // 文本格式化
+    formatText(command, value = null) {
+        const editor = document.getElementById('editor');
+        if (editor) {
+            document.execCommand(command, false, value);
+            editor.focus();
+            this.updateStatus();
+            this.saveToLocalStorage();
+        }
+    }
+    
+    // 设置页面方向
+    setPageOrientation(orientation) {
+        const page = document.getElementById('page');
+        const buttons = document.querySelectorAll('.page-size-btn');
+        
+        if (buttons.length > 0) {
+            buttons.forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(orientation + 'Btn');
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+        }
+        
+        this.currentOrientation = orientation;
+        
+        if (page) {
+            if (orientation === 'landscape') {
+                page.classList.add('landscape');
+            } else {
+                page.classList.remove('landscape');
+            }
+        }
+        
+        this.saveToLocalStorage();
+    }
+    
+    // 设置缩放
+    setZoom(zoom) {
+        this.currentZoom = parseFloat(zoom);
+        const editor = document.getElementById('editor');
+        if (editor) {
+            editor.style.transform = `scale(${this.currentZoom})`;
+            editor.style.transformOrigin = 'top left';
+        }
+        this.saveToLocalStorage();
+    }
+    
+    // 更新状态栏
+    updateStatus() {
+        // 状态栏更新功能已简化，不需要具体实现
+    }
+    
+    // 保存到本地存储
+    saveToLocalStorage() {
+        const editor = document.getElementById('editor');
+        if (editor) {
+            const content = editor.innerHTML;
+            localStorage.setItem('editorContent', content);
+            localStorage.setItem('editorOrientation', this.currentOrientation);
+            localStorage.setItem('editorZoom', this.currentZoom);
+        }
+    }
+    
+    // 从本地存储加载
+    loadFromLocalStorage() {
+        const content = localStorage.getItem('editorContent');
+        const orientation = localStorage.getItem('editorOrientation');
+        const zoom = localStorage.getItem('editorZoom');
+        
+        const editor = document.getElementById('editor');
+        if (editor && content) {
+            editor.innerHTML = content;
+        }
+        
+        if (orientation) {
+            this.setPageOrientation(orientation);
+        }
+        
+        if (zoom) {
+            const zoomSelect = document.getElementById('zoomLevel');
+            if (zoomSelect) {
+                zoomSelect.value = zoom;
+            }
+            this.setZoom(zoom);
+        }
+    }
+    
+    // 显示打印预览
+    showPrintPreview() {
+        const editor = document.getElementById('editor');
+        const previewContent = document.getElementById('previewContent');
+        const printPreview = document.getElementById('printPreview');
+        
+        if (editor && previewContent && printPreview) {
+            previewContent.innerHTML = editor.innerHTML;
+            printPreview.style.display = 'flex';
+        }
+    }
+    
+    // 关闭打印预览
+    closePrintPreview() {
+        const printPreview = document.getElementById('printPreview');
+        if (printPreview) {
+            printPreview.style.display = 'none';
+        }
+    }
+    
+    // 打印文档
+    printDocument() {
+        this.showPrintPreview();
+    }
+}
+
+// 初始化Word编辑器
+let wordEditor;
 document.addEventListener('DOMContentLoaded', () => {
+    // 初始化主编辑器
     new PrintTemplateEditor();
+    
+    // 初始化Word风格编辑器（如果存在相关元素）
+    if (document.getElementById('editor')) {
+        wordEditor = new WordStyleEditor();
+    }
 });
-
-// 移动端触摸事件支持
-document.addEventListener('touchstart', function(e) {
-    if (e.touches.length > 1) {
-        e.preventDefault();
-    }
-}, { passive: false });
-
-document.addEventListener('touchmove', function(e) {
-    if (e.touches.length > 1) {
-        e.preventDefault();
-    }
-}, { passive: false });
