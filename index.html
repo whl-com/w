@@ -355,8 +355,8 @@
             <div class="page-controls">
                 <div>
                     <span>页面设置: </span>
-                    <button class="page-size-btn active" onclick="setPageOrientation('portrait')">竖版 A4</button>
-                    <button class="page-size-btn" onclick="setPageOrientation('landscape')">横版 A4</button>
+                    <button class="page-size-btn active" onclick="setPageOrientation('portrait', this)">竖版 A4</button>
+                <button class="page-size-btn" onclick="setPageOrientation('landscape', this)">横版 A4</button>
                 </div>
                 <div>
                     <span>缩放: </span>
@@ -600,12 +600,22 @@
         }
         
         // 设置页面方向
-        function setPageOrientation(orientation) {
+        function setPageOrientation(orientation, targetButton = null) {
             const page = document.getElementById('page');
             const buttons = document.querySelectorAll('.page-size-btn');
             
             buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            
+            // 只有当通过按钮点击调用时才激活对应按钮
+            if (targetButton) {
+                targetButton.classList.add('active');
+            } else {
+                // 通过代码调用时，激活对应的按钮
+                const targetBtn = document.querySelector(`.page-size-btn[onclick*="'${orientation}'"]`);
+                if (targetBtn) {
+                    targetBtn.classList.add('active');
+                }
+            }
             
             currentOrientation = orientation;
             

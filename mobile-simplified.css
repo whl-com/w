@@ -1,9 +1,14 @@
 /* 移动端简化界面 - 专注于编辑内容 */
 
 @media (max-width: 768px) {
-    /* 隐藏不必要的工具栏组 */
-    .tool-group:nth-child(n+4) {
+    /* 只保留第一个工具栏组（字体设置），隐藏其他所有工具栏组 */
+    .tool-group:not(:first-child) {
         display: none !important;
+    }
+    
+    /* 确保第一个工具栏组显示 */
+    .tool-group:first-child {
+        display: flex !important;
     }
     
     /* 简化工具栏 */
@@ -119,7 +124,13 @@
         display: none !important;
     }
     
-    /* 只保留核心功能按钮 */
+    /* 只保留核心功能按钮 - 保存、加载、打印 */
+    .tool-btn.primary,
+    .tool-btn.danger {
+        display: inline-block !important;
+    }
+    
+    /* 隐藏其他功能按钮 */
     .tool-btn:not(.primary):not(.danger) {
         display: none !important;
     }
