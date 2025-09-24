@@ -26,7 +26,7 @@ class MobileTouchHandler {
     }
 
     addTouchEvents(element) {
-        // 触摸开始
+        // 触摸开始 - 简化版本，只处理基本事件
         element.addEventListener('touchstart', (e) => {
             // 只在非输入元素上阻止默认行为
             if (!e.target.matches('input, textarea, select, [contenteditable="true"]')) {
@@ -37,12 +37,8 @@ class MobileTouchHandler {
             this.touchStartY = e.touches[0].clientY;
             this.isDragging = false;
             
-            // 长按触发编辑（任何位置都可以）
-            this.longPressTimer = setTimeout(() => {
-                this.editor.selectElement(element);
-                this.showEditIndicator(element);
-                this.isDragging = false;
-            }, 2000); // 长按2秒触发编辑
+            // 移除长按触发编辑功能
+            // 现在任何点击都可以直接编辑
         }, { passive: false });
 
         // 触摸移动
@@ -52,44 +48,40 @@ class MobileTouchHandler {
                 e.preventDefault();
             }
             
-            if (this.longPressTimer) {
-                clearTimeout(this.longPressTimer);
-                this.longPressTimer = null;
-            }
-            
-            // 检查是否是滑动（避免误触发点击）
+            // 检查是否是滑动
             const currentX = e.touches[0].clientX;
             const currentY = e.touches[0].clientY;
             const deltaX = Math.abs(currentX - this.touchStartX);
             const deltaY = Math.abs(currentY - this.touchStartY);
             
             if (deltaX > 5 || deltaY > 5) {
-                // 滑动操作，标记为拖动
                 this.isDragging = true;
-                if (this.longPressTimer) {
-                    clearTimeout(this.longPressTimer);
-                    this.longPressTimer = null;
-                }
             }
         }, { passive: false });
 
-        // 触摸结束
+        // 触摸结束 - 简化版本
         element.addEventListener('touchend', (e) => {
-            if (this.longPressTimer) {
-                clearTimeout(this.longPressTimer);
-                this.longPressTimer = null;
-            }
-            
             const touchDuration = Date.now() - this.touchStartTime;
             const currentX = e.changedTouches[0].clientX;
             const currentY = e.changedTouches[0].clientY;
             const deltaX = Math.abs(currentX - this.touchStartX);
             const deltaY = Math.abs(currentY - this.touchStartY);
             
-            // 短按（点击） - 选中元素（任何位置都可以）
+            // 点击即可选中元素（无需长按）
             if (touchDuration < 300 && deltaX < 10 && deltaY < 10 && !this.isDragging) {
-                this.editor.selectElementWithoutPanel(element);
+                this.editor.selectElement(element);
                 this.showSelectionIndicator(element);
+                
+                // 如果是文本元素，立即聚焦到输入框
+                if (element.classList.contains('text-element')) {
+                    setTimeout(() => {
+                        const contentInput = document.querySelector('.property-group textarea');
+                        if (contentInput) {
+                            contentInput.focus();
+                            contentInput.select();
+                        }
+                    }, 100);
+                }
             }
             
             this.isDragging = false;
@@ -97,10 +89,6 @@ class MobileTouchHandler {
 
         // 触摸取消
         element.addEventListener('touchcancel', () => {
-            if (this.longPressTimer) {
-                clearTimeout(this.longPressTimer);
-                this.longPressTimer = null;
-            }
             this.isDragging = false;
         }, { passive: false });
     }
