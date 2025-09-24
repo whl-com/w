@@ -1,0 +1,87 @@
+/* 移动端属性面板修复 */
+
+/* 确保属性面板在移动端正确显示 */
+.properties-panel {
+    z-index: 1000 !important; /* 确保属性面板在最顶层 */
+    max-height: 60vh !important; /* 限制最大高度 */
+    overflow-y: auto !important; /* 允许滚动 */
+}
+
+/* 移动端属性面板优化 */
+@media (max-width: 768px) {
+    .properties-panel {
+        padding: 15px !important;
+        border-top-left-radius: 12px !important;
+        border-top-right-radius: 12px !important;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.15) !important;
+    }
+    
+    .properties-panel h3 {
+        font-size: 18px !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .property-group {
+        margin-bottom: 15px !important;
+    }
+    
+    .property-group label {
+        font-size: 14px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .property-group input,
+    .property-group select,
+    .property-group textarea {
+        font-size: 16px !important; /* 防止iOS缩放 */
+        padding: 12px !important;
+        border-radius: 8px !important;
+        border: 2px solid #e1e5e9 !important;
+    }
+    
+    .property-group textarea {
+        min-height: 80px !important;
+    }
+    
+    /* 按钮样式优化 */
+    .property-group button {
+        padding: 12px 20px !important;
+        font-size: 16px !important;
+        border-radius: 8px !important;
+        margin-top: 10px !important;
+    }
+    
+    /* 确保属性面板不会被键盘遮挡 */
+    @media (max-height: 600px) {
+        .properties-panel {
+            max-height: 50vh !important;
+        }
+    }
+}
+
+/* 防止iOS输入框缩放 */
+@supports (-webkit-touch-callout: none) {
+    .property-group input,
+    .property-group select,
+    .property-group textarea {
+        font-size: 16px !important;
+    }
+}
+
+/* 安卓设备优化 */
+@supports (-webkit-overflow-scrolling: touch) {
+    .properties-panel {
+        -webkit-overflow-scrolling: touch !important;
+    }
+}
+
+/* 确保属性面板在横屏模式下也能正常显示 */
+@media (max-width: 768px) and (orientation: landscape) {
+    .properties-panel {
+        max-height: 70vh !important;
+    }
+    
+    .property-group {
+        margin-bottom: 10px !important;
+    }
+}

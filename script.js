@@ -4,8 +4,112 @@ class PrintTemplateEditor {
         this.propertiesPanel = document.getElementById('propertiesPanel');
         this.selectedElement = null;
         this.elementCount = 0;
+        this.mobileTouchHandler = null;
         
         this.initEventListeners();
+        this.initMobileTouch();
+    }
+
+    // 初始化移动端触摸支持
+    initMobileTouch() {
+        // 检测是否为移动设备
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+            console.log('检测到移动设备，启用触摸事件支持');
+            
+            // 延迟加载移动触摸处理器，确保DOM完全加载
+            setTimeout(() => {
+                try {
+                    // 动态加载mobile-events.js
+                    if (typeof MobileTouchHandler !== 'undefined') {
+                        this.mobileTouchHandler = new MobileTouchHandler(this);
+                        console.log('移动触摸事件处理器初始化成功');
+                    } else {
+                        console.warn('MobileTouchHandler未定义，请确保mobile-events.js已加载');
+                        this.fallbackMobileTouchSupport();
+                    }
+                } catch (error) {
+                    console.error('移动触摸处理器初始化失败:', error);
+                    this.fallbackMobileTouchSupport();
+                }
+            }, 100);
+        }
+    }
+
+    // 备用移动触摸支持（如果MobileTouchHandler不可用）
+    fallbackMobileTouchSupport() {
+        console.log('启用备用移动触摸支持');
+        
+        const elements = document.querySelectorAll('.editable-element');
+        elements.forEach(element => {
+            this.addMobileTouchEvents(element);
+        });
+    }
+
+    // 添加移动触摸事件
+    addMobileTouchEvents(element) {
+        let touchStartTime = 0;
+        let longPressTimer = null;
+        let isDragging = false;
+
+        // 触摸开始
+        element.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            touchStartTime = Date.now();
+            isDragging = false;
+            
+            // 长按2秒触发编辑
+            longPressTimer = setTimeout(() => {
+                this.selectElement(element);
+                this.showTouchIndicator(element, '#667eea');
+                isDragging = false;
+            }, 2000);
+        }, { passive: false });
+
+        // 触摸移动
+        element.addEventListener('touchmove', (e) => {
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+            isDragging = true;
+        }, { passive: false });
+
+        // 触摸结束
+        element.addEventListener('touchend', (e) => {
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+            
+            const touchDuration = Date.now() - touchStartTime;
+            
+            // 短按选中元素
+            if (touchDuration < 300 && !isDragging) {
+                this.selectElementWithoutPanel(element);
+                this.showTouchIndicator(element, '#4CAF50');
+            }
+            
+            isDragging = false;
+        }, { passive: false });
+
+        // 触摸取消
+        element.addEventListener('touchcancel', () => {
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+            isDragging = false;
+        }, { passive: false });
+    }
+
+    // 显示触摸指示器
+    showTouchIndicator(element, color) {
+        element.style.boxShadow = `0 0 0 3px ${color}`;
+        setTimeout(() => {
+            element.style.boxShadow = '';
+        }, 1000);
     }
 
     initEventListeners() {
