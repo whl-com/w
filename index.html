@@ -389,17 +389,6 @@
                     <button class="page-size-btn active" onclick="setPageOrientation('portrait', event)" data-orientation="portrait">竖版 A4</button>
                     <button class="page-size-btn" onclick="setPageOrientation('landscape', event)" data-orientation="landscape">横版 A4</button>
                 </div>
-                <div>
-                    <span>缩放: </span>
-                    <select id="zoomLevel" onchange="setZoom(this.value)">
-                        <option value="0.5">50%</option>
-                        <option value="0.75">75%</option>
-                        <option value="1" selected>100%</option>
-                        <option value="1.25">125%</option>
-                        <option value="1.5">150%</option>
-                        <option value="2">200%</option>
-                    </select>
-                </div>
             </div>
             
             <div class="editor-area">
@@ -461,7 +450,6 @@
 
     <script>
         let currentOrientation = 'portrait';
-        let currentZoom = 1;
         
         // 初始化编辑器
         function initEditor() {
@@ -557,13 +545,6 @@
             saveToLocalStorage();
         }
         
-        // 设置缩放
-        function setZoom(zoom) {
-            currentZoom = parseFloat(zoom);
-            document.getElementById('editor').style.transform = `scale(${currentZoom})`;
-            document.getElementById('editor').style.transformOrigin = 'top left';
-        }
-        
         // 更新状态栏
         function updateStatus() {
             const editor = document.getElementById('editor');
@@ -587,14 +568,12 @@
             const content = document.getElementById('editor').innerHTML;
             localStorage.setItem('editorContent', content);
             localStorage.setItem('editorOrientation', currentOrientation);
-            localStorage.setItem('editorZoom', currentZoom);
         }
         
         // 从本地存储加载
         function loadFromLocalStorage() {
             const content = localStorage.getItem('editorContent');
             const orientation = localStorage.getItem('editorOrientation');
-            const zoom = localStorage.getItem('editorZoom');
             
             if (content) {
                 document.getElementById('editor').innerHTML = content;
@@ -602,11 +581,6 @@
             
             if (orientation) {
                 setPageOrientation(orientation);
-            }
-            
-            if (zoom) {
-                document.getElementById('zoomLevel').value = zoom;
-                setZoom(zoom);
             }
         }
         
@@ -619,8 +593,7 @@
             const templateData = {
                 name: templateName,
                 content: content,
-                orientation: currentOrientation,
-                zoom: currentZoom
+                orientation: currentOrientation
             };
             
             // 保存到localStorage
@@ -708,11 +681,6 @@
             
             if (templateData.orientation) {
                 setPageOrientation(templateData.orientation);
-            }
-            
-            if (templateData.zoom) {
-                document.getElementById('zoomLevel').value = templateData.zoom;
-                setZoom(templateData.zoom);
             }
             
             updateStatus();
