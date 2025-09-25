@@ -144,6 +144,28 @@
             min-height: 400px;
             outline: none;
             line-height: 1.6;
+            font-size: 24px !important; /* 设置默认字体大小 */
+        }
+        
+        .editable-content h1 {
+            font-size: 36px !important; /* 标题字体大小 */
+        }
+        
+        .editable-content h2 {
+            font-size: 24px !important; /* 二级标题字体大小 */
+        }
+        
+        /* 强制设置默认内容的字体大小 */
+        #editor h1 {
+            font-size: 36px !important;
+        }
+        
+        #editor h2 {
+            font-size: 24px !important;
+        }
+        
+        #editor {
+            font-size: 24px !important;
         }
         
         .editable-content:focus {
@@ -420,7 +442,6 @@
             <div class="status-bar">
                 <div id="wordCount">字数: 0</div>
                 <div id="pageInfo">页面: A4 竖版</div>
-                <div id="cursorPosition">行: 1, 列: 1</div>
             </div>
         </div>
     </div>
@@ -437,7 +458,7 @@
     </div>
 
     <script>
-        let currentOrientation = 'portrait';
+        let currentOrientation = 'landscape';
         
         // 初始化编辑器
         function initEditor() {
@@ -467,6 +488,11 @@
             loadFromLocalStorage();
             updateStatus();
             setupEventListeners();
+            
+            // 默认设置为横板
+            if (!localStorage.getItem('editorOrientation')) {
+                setPageOrientation('landscape');
+            }
             
             // 移动端适配
             if ('ontouchstart' in window) {
@@ -561,9 +587,9 @@
             const editor = document.getElementById('editor');
             const text = editor.textContent || editor.innerText;
             
-            // 字数统计
-            const wordCount = text.trim().length;
-            document.getElementById('wordCount').textContent = `字数: ${wordCount}`;
+            // 字数统计 - 计算中文字数（汉字数量）
+            const chineseCharCount = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+            document.getElementById('wordCount').textContent = `字数: ${chineseCharCount}`;
             
             // 文档统计
             updateDocumentStats();
