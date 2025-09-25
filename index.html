@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>打印专用</title>
     <style>
         * {
@@ -437,6 +440,29 @@
         
         // 初始化编辑器
         function initEditor() {
+            // 强制刷新缓存 - 针对移动端浏览器
+            if (window.performance) {
+                // 如果是通过后退/前进按钮访问，强制刷新
+                if (window.performance.navigation.type === window.performance.navigation.TYPE_BACK_FORWARD) {
+                    window.location.reload();
+                }
+                
+                // 检查页面是否被缓存，如果是则强制刷新
+                const navigation = window.performance.getEntriesByType('navigation')[0];
+                if (navigation && navigation.type === 'back_forward') {
+                    window.location.reload();
+                }
+            }
+            
+            // 添加时间戳参数防止缓存
+            const links = document.querySelectorAll('link[rel="stylesheet"]');
+            links.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && !href.includes('?')) {
+                    link.setAttribute('href', href + '?v=' + Date.now());
+                }
+            });
+            
             loadFromLocalStorage();
             updateStatus();
             setupEventListeners();
