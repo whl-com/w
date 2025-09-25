@@ -347,7 +347,7 @@
         <div class="header-actions">
             <button class="tool-btn" onclick="saveTemplate()">💾 保存模板</button>
             <button class="tool-btn" onclick="showTemplateSelection()">📂 加载模板</button>
-            <button class="tool-btn" onclick="resetFontSizes()">🔄 重置字体</button>
+            <button class="tool-btn" onclick="resetFontSizes()">🔄 重置</button>
             <button class="tool-btn" onclick="printDocument()">🖨️ 打印</button>
         </div>
     </div>
@@ -366,10 +366,10 @@
             <select id="fontSize" onchange="formatText('fontSize', this.value)">
                 <option value="1">8px</option>
                 <option value="2">10px</option>
-                <option value="3" selected>12px</option>
+                <option value="3">12px</option>
                 <option value="4">14px</option>
                 <option value="5">18px</option>
-                <option value="6">24px</option>
+                <option value="6" selected>24px</option>
                 <option value="7">36px</option>
             </select>
         </div>
@@ -597,14 +597,12 @@
             }
         }
         
-        // 清除本地存储并重置字体大小
+        // 清除本地存储并重置字体大小（无确认提示）
         function resetFontSizes() {
-            if (confirm('确定要重置字体大小为默认值吗？这将清除所有已保存的内容。')) {
-                localStorage.removeItem('editorContent');
-                localStorage.removeItem('editorOrientation');
-                localStorage.removeItem('wordTemplates');
-                location.reload();
-            }
+            localStorage.removeItem('editorContent');
+            localStorage.removeItem('editorOrientation');
+            // 注意：不删除wordTemplates，保留已保存的模板
+            location.reload();
         }
         
         // 保存模板
