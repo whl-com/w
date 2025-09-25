@@ -347,6 +347,7 @@
         <div class="header-actions">
             <button class="tool-btn" onclick="saveTemplate()">💾 保存模板</button>
             <button class="tool-btn" onclick="showTemplateSelection()">📂 加载模板</button>
+            <button class="tool-btn" onclick="resetFontSizes()">🔄 重置字体</button>
             <button class="tool-btn" onclick="printDocument()">🖨️ 打印</button>
         </div>
     </div>
@@ -585,12 +586,24 @@
             const content = localStorage.getItem('editorContent');
             const orientation = localStorage.getItem('editorOrientation');
             
+            // 只有当本地存储中有内容时才覆盖默认内容
             if (content) {
                 document.getElementById('editor').innerHTML = content;
             }
+            // 否则使用HTML中设置的默认内容（包含字体大小样式）
             
             if (orientation) {
                 setPageOrientation(orientation);
+            }
+        }
+        
+        // 清除本地存储并重置字体大小
+        function resetFontSizes() {
+            if (confirm('确定要重置字体大小为默认值吗？这将清除所有已保存的内容。')) {
+                localStorage.removeItem('editorContent');
+                localStorage.removeItem('editorOrientation');
+                localStorage.removeItem('wordTemplates');
+                location.reload();
             }
         }
         
