@@ -345,8 +345,8 @@
     <div class="header">
         <h1>📝 打印专用</h1>
         <div class="header-actions">
-            <button class="tool-btn" onclick="saveTemplate()">💾 保存模板</button>
-            <button class="tool-btn" onclick="showTemplateSelection()">📂 加载模板</button>
+            <button class="tool-btn" onclick="saveTemplate()">💾 保存</button>
+            <button class="tool-btn" onclick="showTemplateSelection()">📂 打开</button>
             <button class="tool-btn" onclick="resetFontSizes()">🔄 重置</button>
             <button class="tool-btn" onclick="printDocument()">🖨️ 打印</button>
         </div>
@@ -390,8 +390,8 @@
             <div class="page-controls">
                 <div>
                     <span>页面设置: </span>
-                    <button class="page-size-btn active" onclick="setPageOrientation('portrait', event)" data-orientation="portrait">竖版 A4</button>
-                    <button class="page-size-btn" onclick="setPageOrientation('landscape', event)" data-orientation="landscape">横版 A4</button>
+                    <button class="page-size-btn" onclick="setPageOrientation('portrait', event)" data-orientation="portrait">竖版 A4</button>
+                    <button class="page-size-btn active" onclick="setPageOrientation('landscape', event)" data-orientation="landscape">横版 A4</button>
                 </div>
             </div>
             
