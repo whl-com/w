@@ -386,18 +386,14 @@
             </select>
             
             <select id="fontSize" onchange="formatText('fontSize', this.value)">
-                <option value="1">8px</option>
-                <option value="2">10px</option>
-                <option value="3">12px</option>
-                <option value="4">14px</option>
-                <option value="5">18px</option>
-                <option value="6">24px</option>
-                <option value="7" selected>26px</option>
-                <option value="8">28px</option>
-                <option value="9">30px</option>
-                <option value="10">32px</option>
-                <option value="11">34px</option>
-                <option value="12">36px</option>
+                <option value="1">18px</option>
+                <option value="2" selected>24px</option>
+                <option value="3">26px</option>
+                <option value="4">28px</option>
+                <option value="5">30px</option>
+                <option value="6">32px</option>
+                <option value="7">34px</option>
+                <option value="8">36px</option>
             </select>
         </div>
         
@@ -554,18 +550,14 @@
             if (command === 'fontSize') {
                 // 字号映射表
                 const fontSizeMap = {
-                    '1': '8px',
-                    '2': '10px',
-                    '3': '12px',
-                    '4': '14px',
-                    '5': '18px',
-                    '6': '24px',
-                    '7': '26px',
-                    '8': '28px',
-                    '9': '30px',
-                    '10': '32px',
-                    '11': '34px',
-                    '12': '36px'
+                    '1': '18px',
+                    '2': '24px',
+                    '3': '26px',
+                    '4': '28px',
+                    '5': '30px',
+                    '6': '32px',
+                    '7': '34px',
+                    '8': '36px'
                 };
                 
                 const fontSize = fontSizeMap[value] || '24px';
