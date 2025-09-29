@@ -388,12 +388,9 @@
             <select id="fontSize" onchange="formatText('fontSize', this.value)">
                 <option value="1">18px</option>
                 <option value="2" selected>24px</option>
-                <option value="3">26px</option>
-                <option value="4">28px</option>
-                <option value="5">30px</option>
-                <option value="6">32px</option>
-                <option value="7">34px</option>
-                <option value="8">36px</option>
+                <option value="3">28px</option>
+                <option value="4">30px</option>
+                <option value="5">36px</option>
             </select>
         </div>
         
@@ -548,23 +545,17 @@
         // 文本格式化
         function formatText(command, value = null) {
             if (command === 'fontSize') {
-                // 字号映射表
+                // 字号映射表 - 使用浏览器支持的fontSize值（1-7）
                 const fontSizeMap = {
-                    '1': '18px',
-                    '2': '24px',
-                    '3': '26px',
-                    '4': '28px',
-                    '5': '30px',
-                    '6': '32px',
-                    '7': '34px',
-                    '8': '36px'
+                    '1': '3', // 18px
+                    '2': '4', // 24px
+                    '3': '5', // 28px
+                    '4': '6', // 30px
+                    '5': '7'  // 36px
                 };
                 
-                const fontSize = fontSizeMap[value] || '24px';
-                document.execCommand('fontSize', false, '7'); // 使用默认的fontSize命令
-                document.execCommand('styleWithCSS', false, true);
-                document.execCommand('fontSize', false, '1');
-                document.execCommand('insertHTML', false, `<span style="font-size: ${fontSize}">${window.getSelection().toString()}</span>`);
+                const fontSizeValue = fontSizeMap[value] || '4';
+                document.execCommand('fontSize', false, fontSizeValue);
             } else {
                 document.execCommand(command, false, value);
             }
