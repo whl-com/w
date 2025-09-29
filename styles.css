@@ -18,7 +18,7 @@ body {
 }
 
 .header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #667eea 0%, #6621ac 100%);
     color: white;
     padding: 1rem;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -248,6 +248,58 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* 打印预览头部样式 */
+.print-preview .print-preview-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.print-preview .print-preview-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.print-preview .print-preview-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.print-preview .print-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.print-preview .print-btn:hover {
+    background: #5a67d8;
+}
+
+.print-preview .cancel-btn {
+    background: #e2e8f0;
+    color: #4a5568;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.print-preview .cancel-btn:hover {
+    background: #cbd5e0;
 }
 
 .print-preview-content {

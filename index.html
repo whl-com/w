@@ -391,8 +391,13 @@
                 <option value="3">12px</option>
                 <option value="4">14px</option>
                 <option value="5">18px</option>
-                <option value="6" selected>24px</option>
-                <option value="7">36px</option>
+                <option value="6">24px</option>
+                <option value="7" selected>26px</option>
+                <option value="8">28px</option>
+                <option value="9">30px</option>
+                <option value="10">32px</option>
+                <option value="11">34px</option>
+                <option value="12">36px</option>
             </select>
         </div>
         
@@ -428,12 +433,12 @@
                         <h1 style="text-align: center;font-size: 36px;">商家名称：</h1>
                         <p><br></p>
                         
-                        <h2 style="text-align: center;font-size: 24px">经营品种：</h2>
+                        <h2 style="text-align: center;font-size: 26px">经营品种：</h2>
                         <p><br></p>
                         
-            <h2 style="font-size: 24px;">地址：</h2>
-		 <h2 style="font-size: 24px;">电话：</h2>
-		 <h2 style="font-size: 24px;">塑料袋印字：</h2>
+            <h2 style="font-size: 26px;">地址：</h2>
+		 <h2 style="font-size: 26px;">电话：</h2>
+		 <h2 style="font-size: 26px;">塑料袋印字：</h2>
                 
                     </div>
                 </div>
@@ -448,12 +453,14 @@
     
     <div class="print-preview" id="printPreview">
         <div class="print-preview-content">
-            <h2>打印预览</h2>
-            <div id="previewContent"></div>
-            <div style="margin-top: 20px; text-align: center;">
-                <button class="tool-btn" onclick="window.print()">打印</button>
-                <button class="tool-btn" onclick="closePrintPreview()" style="background: #95a5a6;">关闭</button>
+            <div class="print-preview-header">
+                <h2>打印预览</h2>
+                <div class="print-preview-controls">
+                    <button class="print-btn" onclick="window.print()">打印</button>
+                    <button class="cancel-btn" onclick="closePrintPreview()">关闭</button>
+                </div>
             </div>
+            <div id="previewContent"></div>
         </div>
     </div>
 
@@ -544,7 +551,32 @@
         
         // 文本格式化
         function formatText(command, value = null) {
-            document.execCommand(command, false, value);
+            if (command === 'fontSize') {
+                // 字号映射表
+                const fontSizeMap = {
+                    '1': '8px',
+                    '2': '10px',
+                    '3': '12px',
+                    '4': '14px',
+                    '5': '18px',
+                    '6': '24px',
+                    '7': '26px',
+                    '8': '28px',
+                    '9': '30px',
+                    '10': '32px',
+                    '11': '34px',
+                    '12': '36px'
+                };
+                
+                const fontSize = fontSizeMap[value] || '24px';
+                document.execCommand('fontSize', false, '7'); // 使用默认的fontSize命令
+                document.execCommand('styleWithCSS', false, true);
+                document.execCommand('fontSize', false, '1');
+                document.execCommand('insertHTML', false, `<span style="font-size: ${fontSize}">${window.getSelection().toString()}</span>`);
+            } else {
+                document.execCommand(command, false, value);
+            }
+            
             document.getElementById('editor').focus();
             updateStatus();
         }
